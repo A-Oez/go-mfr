@@ -116,7 +116,7 @@ func assignStepDataToExcel(stepDataField []model.StepDataField, serviceRequestsE
 		case "Wie viele ONTs?":
 			serviceRequestsExcel.NumberOfAssembledONTs = stepData.Result
 		case "Art des verbauten AP":
-			serviceRequestsExcel.WE = stepData.Result
+			serviceRequestsExcel.WE = strings.ReplaceAll(stepData.Result, "WE", "")
 		case "LED rot oder grün?":
 			serviceRequestsExcel.ONTStatus = stepData.Result
 		case "Bemerkungen?":
