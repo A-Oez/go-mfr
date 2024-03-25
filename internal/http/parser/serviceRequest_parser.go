@@ -87,9 +87,12 @@ func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequest
 	}
 
 	spllittedAddress := strings.Split(serviceRequests.Value[0].Name, "_")
-	serviceRequestsExcel.Straße = spllittedAddress[2]
-	serviceRequestsExcel.Hausnummer = spllittedAddress[3]
-	serviceRequestsExcel.Stadt = spllittedAddress[4]
+
+	if len(spllittedAddress) > 4 {
+		serviceRequestsExcel.Straße = spllittedAddress[2]
+		serviceRequestsExcel.Hausnummer = spllittedAddress[3]
+		serviceRequestsExcel.Stadt = spllittedAddress[4]
+	}
 
 	serviceRequestsExcel.Vertragsnehmer = serviceRequests.Value[0].Description
 }
