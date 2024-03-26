@@ -38,30 +38,23 @@ func cmdRun(cmd *cobra.Command, args []string) {
 }
 
 func exportServiceRequests(excelPath string, tNumbers []string) {
-	done := make(chan struct{})
 
-	go func() {
-		for i := range tNumbers {
-			excelServiceRequest, err := parser.GetExcelModel(tNumbers[i])
-			if err == nil {
-				excelTemplates.WriteToExcel(excelPath, excelServiceRequest)
-			} else {
-				fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestExport"), tNumbers[i], err.Error()))
-			}
+	for i := range tNumbers {
+		excelServiceRequest, err := parser.GetExcelModel(tNumbers[i])
+
+		if err == nil {
+			excelTemplates.WriteToExcel(excelPath, excelServiceRequest)
+			exportServiceRequestsAddress(excelPath, excelServiceRequest.Description, excelServiceRequest.Auftragsname, tNumbers[i])
+		} else {
+			fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestExport"), tNumbers[i], err.Error()))
 		}
-		done <- struct{}{}
-	}()
+	}
 
-	go func() {
-		for i := range tNumbers {
-			excelServiceRequestAddress := parser.GetExcelAddressModel(tNumbers[i])
-			for j := range excelServiceRequestAddress {
-				excelTemplates.WriteToAddressExcel(excelPath, excelServiceRequestAddress[j], tNumbers[i])
-			}
-		}
-		done <- struct{}{}
-	}()
+}
 
-	<-done
-	<-done
+func exportServiceRequestsAddress(excelPath string, description string, orderName string, tNumber string) {
+	excelServiceRequestAddress := parser.GetExcelAddressModel(description, orderName)
+	for j := range excelServiceRequestAddress {
+		excelTemplates.WriteToAddressExcel(excelPath, excelServiceRequestAddress[j], tNumber)
+	}
 }

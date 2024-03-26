@@ -22,6 +22,8 @@ type ServiceRequestsExcel struct {
 	Bemerkungen           string
 	NumberOfAssembledONTs string
 	WE                    string
+	Description           string
+	Auftragsname          string
 }
 
 type ServiceRequestsAddressExcel struct {

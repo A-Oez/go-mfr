@@ -29,20 +29,15 @@ func GetExcelModel(tNumber string) (model.ServiceRequestsExcel, error) {
 	return serviceRequestsExcel, nil
 }
 
-func GetExcelAddressModel(tNumber string) []model.ServiceRequestsAddressExcel {
+func GetExcelAddressModel(description string, orderName string) []model.ServiceRequestsAddressExcel {
 	var serviceRequestsAddressExcelArr []model.ServiceRequestsAddressExcel
-	serviceRequests, _ := parseResponse(tNumber)
 
-	if len(serviceRequests.Value) == 0 {
-		return nil
-	}
-
-	splittedDescrByCustomer := strings.Split(serviceRequests.Value[0].Description, "|")
+	splittedDescrByCustomer := strings.Split(description, "|")
 	for customerIndex := range splittedDescrByCustomer {
 		splittedCustomer := strings.Split(splittedDescrByCustomer[customerIndex], ";")
 		if len(splittedCustomer) == 4 {
 			var serviceRequestsAddressExcel model.ServiceRequestsAddressExcel
-			serviceRequestsAddressExcel.Auftragsname = serviceRequests.Value[0].Name
+			serviceRequestsAddressExcel.Auftragsname = orderName
 			serviceRequestsAddressExcel.Email = splittedCustomer[2]
 			serviceRequestsAddressExcel.Telefon = splittedCustomer[3]
 			serviceRequestsAddressExcelArr = append(serviceRequestsAddressExcelArr, serviceRequestsAddressExcel)
@@ -107,6 +102,9 @@ func relevantStepData(serviceRequests model.ServiceRequests) bool {
 }
 
 func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequestsExcel *model.ServiceRequestsExcel) error {
+	serviceRequestsExcel.Auftragsname = serviceRequests.Value[0].Name
+	serviceRequestsExcel.Description = serviceRequests.Value[0].Description
+
 	//date + kw
 	if len(serviceRequests.Value[0].Appointments) > 0 {
 		timeObj, _ := time.Parse(time.RFC3339, serviceRequests.Value[0].Appointments[0].EndDateTime)
