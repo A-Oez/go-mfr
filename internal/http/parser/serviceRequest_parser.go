@@ -78,6 +78,7 @@ func relevantStepData(serviceRequests model.ServiceRequests) bool {
 
 func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequestsExcel *model.ServiceRequestsExcel) {
 
+	//date + kw
 	if len(serviceRequests.Value[0].Appointments) > 0 {
 		timeObj, _ := time.Parse(time.RFC3339, serviceRequests.Value[0].Appointments[0].EndDateTime)
 		formattedDate := timeObj.Format("02.01.2006")
@@ -86,15 +87,26 @@ func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequest
 		serviceRequestsExcel.KW = week
 	}
 
+	//address
 	spllittedAddress := strings.Split(serviceRequests.Value[0].Name, "_")
-
 	if len(spllittedAddress) > 4 {
 		serviceRequestsExcel.Straße = spllittedAddress[2]
 		serviceRequestsExcel.Hausnummer = spllittedAddress[3]
 		serviceRequestsExcel.Stadt = spllittedAddress[4]
 	}
 
-	serviceRequestsExcel.Vertragsnehmer = serviceRequests.Value[0].Description
+	//customer
+	splittedDescrByCustomer := strings.Split(serviceRequests.Value[0].Description, "|")
+	for customerIndex := range splittedDescrByCustomer {
+		splittedCustomer := strings.Split(splittedDescrByCustomer[customerIndex], ";")
+		if len(splittedCustomer) != 3 {
+			serviceRequestsExcel.Vertragsnehmer = serviceRequests.Value[0].Description
+			break
+		} else {
+			serviceRequestsExcel.Vertragsnummer += splittedCustomer[0] + "\r\n"
+			serviceRequestsExcel.Vertragsnehmer += splittedCustomer[1] + "\r\n"
+		}
+	}
 }
 
 func assignStepDataToExcel(stepDataField []model.StepDataField, serviceRequestsExcel *model.ServiceRequestsExcel) {
