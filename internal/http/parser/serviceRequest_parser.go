@@ -23,6 +23,29 @@ func GetExcelModel(tNumber string) model.ServiceRequestsExcel {
 	return serviceRequestsExcel
 }
 
+func GetExcelAddressModel(tNumber string) []model.ServiceRequestsAddressExcel {
+	var serviceRequestsAddressExcelArr []model.ServiceRequestsAddressExcel
+	serviceRequests, _ := parseResponse(tNumber)
+
+	if len(serviceRequests.Value) == 0 {
+		return serviceRequestsAddressExcelArr
+	}
+
+	splittedDescrByCustomer := strings.Split(serviceRequests.Value[0].Description, "|")
+	for customerIndex := range splittedDescrByCustomer {
+		splittedCustomer := strings.Split(splittedDescrByCustomer[customerIndex], ";")
+		if len(splittedCustomer) == 4 {
+			var serviceRequestsAddressExcel model.ServiceRequestsAddressExcel
+			serviceRequestsAddressExcel.Auftragsname = serviceRequests.Value[0].Name
+			serviceRequestsAddressExcel.Email = splittedCustomer[2]
+			serviceRequestsAddressExcel.Telefon = splittedCustomer[3]
+			serviceRequestsAddressExcelArr = append(serviceRequestsAddressExcelArr, serviceRequestsAddressExcel)
+		}
+	}
+
+	return serviceRequestsAddressExcelArr
+}
+
 func parseResponse(tNumber string) (model.ServiceRequests, []model.StepDataField) {
 	var stepData []model.StepDataField
 	var serviceRequests model.ServiceRequests

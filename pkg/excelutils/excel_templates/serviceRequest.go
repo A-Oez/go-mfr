@@ -57,5 +57,35 @@ func WriteToExcel(filePath string, serviceRequestsExcel model.ServiceRequestsExc
 		log.Fatal(err)
 	}
 
-	fmt.Println(fmt.Sprintf("* %s", serviceRequestsExcel.TNummer))
+	fmt.Println(fmt.Sprintf("* EXPORT %s", serviceRequestsExcel.TNummer))
+}
+
+func WriteToAddressExcel(filePath string, serviceRequestsAddressExcel model.ServiceRequestsAddressExcel, tNumber string) {
+	file, err := excelize.OpenFile(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sheetName := "ADDRESS"
+
+	row := excelutils.FindNextEmptyRow(file, sheetName)
+
+	data := map[string]interface{}{
+		"A": serviceRequestsAddressExcel.Auftragsname,
+		"B": serviceRequestsAddressExcel.Email,
+		"C": serviceRequestsAddressExcel.Telefon,
+	}
+
+	for col, value := range data {
+		cell := fmt.Sprintf("%s%d", col, row)
+		if err := file.SetCellValue(sheetName, cell, value); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if err := file.Save(); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(fmt.Sprintf("* ADDRESS %s", tNumber))
 }

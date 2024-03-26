@@ -24,6 +24,12 @@ type ServiceRequestsExcel struct {
 	WE                    string
 }
 
+type ServiceRequestsAddressExcel struct {
+	Auftragsname string
+	Email        string
+	Telefon      string
+}
+
 type ServiceRequests struct {
 	OdataMetadata string  `json:"odata.metadata"`
 	Value         []Value `json:"value"`

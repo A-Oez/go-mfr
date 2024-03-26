@@ -37,5 +37,10 @@ func cmdRun(cmd *cobra.Command, args []string) {
 func exportServiceRequests(excelPath string, tNumbers []string) {
 	for i := range tNumbers {
 		excelTemplates.WriteToExcel(excelPath, parser.GetExcelModel(tNumbers[i]))
+
+		excelServiceRequestAddress := parser.GetExcelAddressModel(tNumbers[i])
+		for j := range excelServiceRequestAddress {
+			excelTemplates.WriteToAddressExcel(excelPath, excelServiceRequestAddress[j], tNumbers[i])
+		}
 	}
 }
