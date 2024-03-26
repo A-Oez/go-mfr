@@ -99,7 +99,7 @@ func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequest
 	splittedDescrByCustomer := strings.Split(serviceRequests.Value[0].Description, "|")
 	for customerIndex := range splittedDescrByCustomer {
 		splittedCustomer := strings.Split(splittedDescrByCustomer[customerIndex], ";")
-		if len(splittedCustomer) != 3 {
+		if len(splittedCustomer) != 4 {
 			serviceRequestsExcel.Vertragsnehmer = serviceRequests.Value[0].Description
 			break
 		} else {
@@ -132,7 +132,9 @@ func assignStepDataToExcel(stepDataField []model.StepDataField, serviceRequestsE
 		case "LED rot oder grün?":
 			serviceRequestsExcel.ONTStatus = stepData.Result
 		case "Bemerkungen?":
-			serviceRequestsExcel.Bemerkungen += " | " + stepData.Result
+			if stepData.Result != "" {
+				serviceRequestsExcel.Bemerkungen += " | " + stepData.Result
+			}
 		}
 
 	}
