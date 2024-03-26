@@ -57,7 +57,7 @@ func WriteToExcel(filePath string, serviceRequestsExcel model.ServiceRequestsExc
 		log.Fatal(err)
 	}
 
-	fmt.Println(fmt.Sprintf("* EXPORT %s", serviceRequestsExcel.TNummer))
+	fmt.Println(fmt.Sprintf("* %s %s", pReader.GetProperty("serviceRequestExport"), serviceRequestsExcel.TNummer))
 }
 
 func WriteToAddressExcel(filePath string, serviceRequestsAddressExcel model.ServiceRequestsAddressExcel, tNumber string) {
@@ -66,7 +66,7 @@ func WriteToAddressExcel(filePath string, serviceRequestsAddressExcel model.Serv
 		log.Fatal(err)
 	}
 
-	sheetName := "ADDRESS"
+	sheetName := pReader.GetProperty("serviceRequestAddress")
 
 	row := excelutils.FindNextEmptyRow(file, sheetName)
 
@@ -87,5 +87,5 @@ func WriteToAddressExcel(filePath string, serviceRequestsAddressExcel model.Serv
 		log.Fatal(err)
 	}
 
-	fmt.Println(fmt.Sprintf("* ADDRESS %s", tNumber))
+	fmt.Println(fmt.Sprintf("* %s %s", pReader.GetProperty("serviceRequestAddress"), tNumber))
 }

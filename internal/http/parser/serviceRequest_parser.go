@@ -4,23 +4,29 @@ import (
 	"MFRCli/internal/http/request"
 	"MFRCli/internal/model"
 	"encoding/json"
+	"errors"
 	"log"
 	"strings"
 	"time"
 )
 
-func GetExcelModel(tNumber string) model.ServiceRequestsExcel {
+func GetExcelModel(tNumber string) (model.ServiceRequestsExcel, error) {
 	var serviceRequestsExcel model.ServiceRequestsExcel
 	serviceRequests, stepDataField := parseResponse(tNumber)
-	serviceRequestsExcel.TNummer = tNumber
 
 	if stepDataField == nil {
-		return serviceRequestsExcel
+		return serviceRequestsExcel, errors.New("-- ERROR | Keine Checklisten hinterlegt")
 	}
 
 	assignStepDataToExcel(stepDataField, &serviceRequestsExcel)
-	assignSReqDataToExcel(serviceRequests, &serviceRequestsExcel)
-	return serviceRequestsExcel
+	err := assignSReqDataToExcel(serviceRequests, &serviceRequestsExcel)
+
+	if err != nil {
+		return serviceRequestsExcel, errors.New("-- ERROR | " + err.Error())
+	}
+	serviceRequestsExcel.TNummer = tNumber
+
+	return serviceRequestsExcel, nil
 }
 
 func GetExcelAddressModel(tNumber string) []model.ServiceRequestsAddressExcel {
@@ -28,7 +34,7 @@ func GetExcelAddressModel(tNumber string) []model.ServiceRequestsAddressExcel {
 	serviceRequests, _ := parseResponse(tNumber)
 
 	if len(serviceRequests.Value) == 0 {
-		return serviceRequestsAddressExcelArr
+		return nil
 	}
 
 	splittedDescrByCustomer := strings.Split(serviceRequests.Value[0].Description, "|")
@@ -47,7 +53,7 @@ func GetExcelAddressModel(tNumber string) []model.ServiceRequestsAddressExcel {
 }
 
 func parseResponse(tNumber string) (model.ServiceRequests, []model.StepDataField) {
-	var stepData []model.StepDataField
+	var stepDataField []model.StepDataField
 	var serviceRequests model.ServiceRequests
 
 	jsonBody := request.GetServiceRequestAndStepData(tNumber)
@@ -55,10 +61,11 @@ func parseResponse(tNumber string) (model.ServiceRequests, []model.StepDataField
 	serviceRequests = parseServiceRequest(jsonBody)
 
 	if len(serviceRequests.Value) > 0 {
-		stepData = parseStepData(serviceRequests)
+		stepDataField = parseStepData(serviceRequests)
+		return serviceRequests, stepDataField
 	}
 
-	return serviceRequests, stepData
+	return serviceRequests, nil
 }
 
 func parseServiceRequest(jsonString string) model.ServiceRequests {
@@ -99,8 +106,7 @@ func relevantStepData(serviceRequests model.ServiceRequests) bool {
 		serviceRequests.Value[0].Name == "FTTX_Montage AP"
 }
 
-func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequestsExcel *model.ServiceRequestsExcel) {
-
+func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequestsExcel *model.ServiceRequestsExcel) error {
 	//date + kw
 	if len(serviceRequests.Value[0].Appointments) > 0 {
 		timeObj, _ := time.Parse(time.RFC3339, serviceRequests.Value[0].Appointments[0].EndDateTime)
@@ -108,6 +114,8 @@ func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequest
 		_, week := timeObj.ISOWeek()
 		serviceRequestsExcel.Datum = formattedDate
 		serviceRequestsExcel.KW = week
+	} else {
+		return errors.New("Kein Termin hinterlegt")
 	}
 
 	//address
@@ -130,6 +138,8 @@ func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequest
 			serviceRequestsExcel.Vertragsnehmer += splittedCustomer[1] + "\r\n"
 		}
 	}
+
+	return nil
 }
 
 func assignStepDataToExcel(stepDataField []model.StepDataField, serviceRequestsExcel *model.ServiceRequestsExcel) {

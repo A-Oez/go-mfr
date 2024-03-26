@@ -2,10 +2,13 @@ package cmd
 
 import (
 	excelUtils "MFRCli/pkg/excelutils"
+	"fmt"
 
 	excelTemplates "MFRCli/pkg/excelutils/excel_templates"
 
 	parser "MFRCli/internal/http/parser"
+
+	pReader "MFRCli/pkg"
 
 	"github.com/spf13/cobra"
 )
@@ -36,7 +39,13 @@ func cmdRun(cmd *cobra.Command, args []string) {
 
 func exportServiceRequests(excelPath string, tNumbers []string) {
 	for i := range tNumbers {
-		excelTemplates.WriteToExcel(excelPath, parser.GetExcelModel(tNumbers[i]))
+		excelServiceRequest, err := parser.GetExcelModel(tNumbers[i])
+
+		if err == nil {
+			excelTemplates.WriteToExcel(excelPath, excelServiceRequest)
+		} else {
+			fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestExport"), tNumbers[i], err.Error()))
+		}
 
 		excelServiceRequestAddress := parser.GetExcelAddressModel(tNumbers[i])
 		for j := range excelServiceRequestAddress {
