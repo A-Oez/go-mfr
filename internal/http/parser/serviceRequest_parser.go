@@ -78,7 +78,7 @@ func parseStepData(serviceRequests model.ServiceRequests) []model.StepDataField 
 	stepArr := serviceRequests.Value[0].Steps
 
 	for stepIndex := range stepArr {
-		if !relevantStepData(serviceRequests) {
+		if relevantStepData(serviceRequests, stepIndex) {
 			jsonBytes := []byte(stepArr[stepIndex].Data)
 
 			var stepData model.StepData
@@ -95,16 +95,13 @@ func parseStepData(serviceRequests model.ServiceRequests) []model.StepDataField 
 	return stepDataFieldArr
 }
 
-func relevantStepData(serviceRequests model.ServiceRequests) bool {
-	return serviceRequests.Value[0].Name == "Sonstige Bemerkungen" ||
-		serviceRequests.Value[0].Name == "FTTX_Montage/Einblasen NVT" ||
-		serviceRequests.Value[0].Name == "FTTX_Montage AP"
+func relevantStepData(serviceRequests model.ServiceRequests, index int) bool {
+	return serviceRequests.Value[0].Steps[index].Name == "Sonstige Bemerkungen" ||
+		serviceRequests.Value[0].Steps[index].Name == "FTTX_Montage/Einblasen NVT" ||
+		serviceRequests.Value[0].Steps[index].Name == "FTTX_Montage AP"
 }
 
 func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequestsExcel *model.ServiceRequestsExcel) error {
-	serviceRequestsExcel.Auftragsname = serviceRequests.Value[0].Name
-	serviceRequestsExcel.Description = serviceRequests.Value[0].Description
-
 	//date + kw
 	if len(serviceRequests.Value[0].Appointments) > 0 {
 		timeObj, _ := time.Parse(time.RFC3339, serviceRequests.Value[0].Appointments[0].EndDateTime)
@@ -136,6 +133,10 @@ func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequest
 			serviceRequestsExcel.Vertragsnehmer += splittedCustomer[1] + "\r\n"
 		}
 	}
+
+	//direct assignments
+	serviceRequestsExcel.Auftragsname = serviceRequests.Value[0].Name
+	serviceRequestsExcel.Description = serviceRequests.Value[0].Description
 
 	return nil
 }
