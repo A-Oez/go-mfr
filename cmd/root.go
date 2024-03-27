@@ -8,7 +8,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:  "mfr",
+	Use:  "MFRCli",
 	Long: "A GoLang CLI to communicate with the OData interface of mfr",
 }
 
