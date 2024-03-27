@@ -57,9 +57,14 @@ func exportServiceRequests(excelPath string, tNumbers []string) {
 
 func exportServiceRequestsAddress(excelPath string, tNumbers []string) {
 	for i := range tNumbers {
-		excelServiceRequestAddress := parser.GetExcelAddressModel(tNumbers[i])
-		for j := range excelServiceRequestAddress {
-			excelTemplates.WriteToAddressExcel(excelPath, excelServiceRequestAddress[j], tNumbers[i])
+		excelServiceRequestAddress, err := parser.GetExcelAddressModel(tNumbers[i])
+
+		if err == nil {
+			for j := range excelServiceRequestAddress {
+				excelTemplates.WriteToAddressExcel(excelPath, excelServiceRequestAddress[j], tNumbers[i])
+			}
+		} else {
+			fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestAddress"), tNumbers[i], err.Error()))
 		}
 	}
 }

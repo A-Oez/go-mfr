@@ -29,12 +29,12 @@ func GetExcelModel(tNumber string) (model.ServiceRequestsExcel, error) {
 	return serviceRequestsExcel, nil
 }
 
-func GetExcelAddressModel(tNumber string) []model.ServiceRequestsAddressExcel {
+func GetExcelAddressModel(tNumber string) ([]model.ServiceRequestsAddressExcel, error) {
 	var serviceRequestsAddressExcelArr []model.ServiceRequestsAddressExcel
 	serviceRequests, _ := parseResponse(tNumber)
 
 	if len(serviceRequests.Value) == 0 {
-		return serviceRequestsAddressExcelArr
+		return serviceRequestsAddressExcelArr, errors.New("-- ERROR | Keine Daten verfügbar")
 	}
 
 	splittedDescrByCustomer := strings.Split(serviceRequests.Value[0].Description, "|")
@@ -46,10 +46,12 @@ func GetExcelAddressModel(tNumber string) []model.ServiceRequestsAddressExcel {
 			serviceRequestsAddressExcel.Email = splittedCustomer[2]
 			serviceRequestsAddressExcel.Telefon = splittedCustomer[3]
 			serviceRequestsAddressExcelArr = append(serviceRequestsAddressExcelArr, serviceRequestsAddressExcel)
+		} else {
+			return nil, errors.New("-- ERROR | Description stimmt nicht mit Struktur überein")
 		}
 	}
 
-	return serviceRequestsAddressExcelArr
+	return serviceRequestsAddressExcelArr, nil
 }
 
 func parseResponse(tNumber string) (model.ServiceRequests, []model.StepDataField) {
