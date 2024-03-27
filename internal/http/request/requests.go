@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
-	httpUtil "MFRCli/pkg/httpUtils"
+	httpUtil "github.com/A-Oez/MFRCli/pkg/httpUtils"
 )
 
 func GetServiceRequestAndStepData(tNumber string) string {

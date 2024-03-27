@@ -1,13 +1,14 @@
 package parser
 
 import (
-	"MFRCli/internal/http/request"
-	"MFRCli/internal/model"
 	"encoding/json"
 	"errors"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/A-Oez/MFRCli/internal/http/request"
+	"github.com/A-Oez/MFRCli/internal/model"
 )
 
 func GetExcelModel(tNumber string) (model.ServiceRequestsExcel, error) {

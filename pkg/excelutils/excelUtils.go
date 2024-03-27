@@ -4,7 +4,7 @@ import (
 	"log"
 	"strings"
 
-	pReader "MFRCli/pkg"
+	pReader "github.com/A-Oez/MFRCli/pkg"
 
 	"github.com/xuri/excelize/v2"
 )

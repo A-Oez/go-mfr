@@ -1,15 +1,16 @@
 package excelutils_templates
 
 import (
-	"MFRCli/internal/model"
 	"fmt"
 	"log"
 
-	pReader "MFRCli/pkg"
+	"github.com/A-Oez/MFRCli/internal/model"
+
+	pReader "github.com/A-Oez/MFRCli/pkg"
 
 	"github.com/xuri/excelize/v2"
 
-	excelutils "MFRCli/pkg/excelutils"
+	excelutils "github.com/A-Oez/MFRCli/pkg/excelutils"
 )
 
 func WriteToExcel(filePath string, serviceRequestsExcel model.ServiceRequestsExcel) {

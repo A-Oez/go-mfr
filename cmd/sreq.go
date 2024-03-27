@@ -1,14 +1,15 @@
 package cmd
 
 import (
-	excelUtils "MFRCli/pkg/excelutils"
 	"fmt"
 
-	excelTemplates "MFRCli/pkg/excelutils/excel_templates"
+	excelUtils "github.com/A-Oez/MFRCli/pkg/excelutils"
 
-	parser "MFRCli/internal/http/parser"
+	excelTemplates "github.com/A-Oez/MFRCli/pkg/excelutils/excel_templates"
 
-	pReader "MFRCli/pkg"
+	parser "github.com/A-Oez/MFRCli/internal/http/parser"
+
+	pReader "github.com/A-Oez/MFRCli/pkg"
 
 	"github.com/spf13/cobra"
 )

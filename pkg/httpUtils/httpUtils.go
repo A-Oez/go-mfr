@@ -1,10 +1,11 @@
 package httputils
 
 import (
-	pReader "MFRCli/pkg"
 	"io"
 	"log"
 	"net/http"
+
+	pReader "github.com/A-Oez/MFRCli/pkg"
 )
 
 func HttpGetRequest(url string) (statusCode int, body string) {

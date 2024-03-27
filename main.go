@@ -1,7 +1,7 @@
 package main
 
 import (
-	"MFRCli/cmd"
+	"github.com/A-Oez/MFRCli/cmd"
 )
 
 func main() {
