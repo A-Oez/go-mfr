@@ -29,15 +29,20 @@ func GetExcelModel(tNumber string) (model.ServiceRequestsExcel, error) {
 	return serviceRequestsExcel, nil
 }
 
-func GetExcelAddressModel(description string, orderName string) []model.ServiceRequestsAddressExcel {
+func GetExcelAddressModel(tNumber string) []model.ServiceRequestsAddressExcel {
 	var serviceRequestsAddressExcelArr []model.ServiceRequestsAddressExcel
+	serviceRequests, _ := parseResponse(tNumber)
 
-	splittedDescrByCustomer := strings.Split(description, "|")
+	if len(serviceRequests.Value) == 0 {
+		return serviceRequestsAddressExcelArr
+	}
+
+	splittedDescrByCustomer := strings.Split(serviceRequests.Value[0].Description, "|")
 	for customerIndex := range splittedDescrByCustomer {
 		splittedCustomer := strings.Split(splittedDescrByCustomer[customerIndex], ";")
 		if len(splittedCustomer) == 4 {
 			var serviceRequestsAddressExcel model.ServiceRequestsAddressExcel
-			serviceRequestsAddressExcel.Auftragsname = orderName
+			serviceRequestsAddressExcel.Auftragsname = serviceRequests.Value[0].Name
 			serviceRequestsAddressExcel.Email = splittedCustomer[2]
 			serviceRequestsAddressExcel.Telefon = splittedCustomer[3]
 			serviceRequestsAddressExcelArr = append(serviceRequestsAddressExcelArr, serviceRequestsAddressExcel)
@@ -115,10 +120,17 @@ func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequest
 
 	//address
 	spllittedAddress := strings.Split(serviceRequests.Value[0].Name, "_")
-	if len(spllittedAddress) > 4 {
+	if len(spllittedAddress) == 6 {
 		serviceRequestsExcel.Straße = spllittedAddress[2]
 		serviceRequestsExcel.Hausnummer = spllittedAddress[3]
 		serviceRequestsExcel.Stadt = spllittedAddress[4]
+		serviceRequestsExcel.Ort = spllittedAddress[5]
+	} else if len(spllittedAddress) > 4 && len(spllittedAddress) < 6 {
+		serviceRequestsExcel.Straße = spllittedAddress[2]
+		serviceRequestsExcel.Hausnummer = spllittedAddress[3]
+		serviceRequestsExcel.Stadt = spllittedAddress[4]
+	} else {
+		serviceRequestsExcel.Stadt = serviceRequests.Value[0].Name
 	}
 
 	//customer
