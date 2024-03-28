@@ -1,12 +1,12 @@
-package excelutils
+package pkg
 
 import (
 	"log"
 	"strings"
 
-	pReader "github.com/A-Oez/MFRCli/pkg"
-
 	"github.com/xuri/excelize/v2"
+
+	pReader "github.com/A-Oez/MFRCli/pkg"
 )
 
 func GetTNumbers(filePath string) []string {

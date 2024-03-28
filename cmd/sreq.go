@@ -5,13 +5,13 @@ import (
 
 	excelUtils "github.com/A-Oez/MFRCli/pkg/excelutils"
 
-	excelTemplates "github.com/A-Oez/MFRCli/pkg/excelutils/excel_templates"
-
-	parser "github.com/A-Oez/MFRCli/internal/http/parser"
+	parser "github.com/A-Oez/MFRCli/internal/parser"
 
 	pReader "github.com/A-Oez/MFRCli/pkg"
 
 	"github.com/spf13/cobra"
+
+	interfaces "github.com/A-Oez/MFRCli/internal/interfaces"
 )
 
 var sreqCmd = &cobra.Command{
@@ -44,11 +44,13 @@ func cmdRun(cmd *cobra.Command, args []string) {
 }
 
 func exportServiceRequests(excelPath string, tNumbers []string) {
+	var excelWriter interfaces.ExcelWriter
+
 	for i := range tNumbers {
 		excelServiceRequest, err := parser.GetExcelModel(tNumbers[i])
-
 		if err == nil {
-			excelTemplates.WriteToExcel(excelPath, excelServiceRequest)
+			excelWriter = &excelServiceRequest
+			excelWriter.WriteExcel(excelPath, excelServiceRequest)
 		} else {
 			fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestExport"), tNumbers[i], err.Error()))
 		}
@@ -57,12 +59,17 @@ func exportServiceRequests(excelPath string, tNumbers []string) {
 }
 
 func exportServiceRequestsAddress(excelPath string, tNumbers []string) {
+	var excelWriter interfaces.ExcelWriter
+
 	for i := range tNumbers {
-		excelServiceRequestAddress, err := parser.GetExcelAddressModel(tNumbers[i])
+		excelServiceRequestAddressArr, err := parser.GetExcelAddressModel(tNumbers[i])
 
 		if err == nil {
-			for j := range excelServiceRequestAddress {
-				excelTemplates.WriteToAddressExcel(excelPath, excelServiceRequestAddress[j], tNumbers[i])
+			for j := range excelServiceRequestAddressArr {
+				excelServiceRequestAddress := excelServiceRequestAddressArr[j]
+
+				excelWriter = &excelServiceRequestAddress
+				excelWriter.WriteExcel(excelPath, excelServiceRequestAddressArr[j])
 			}
 		} else {
 			fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestAddress"), tNumbers[i], err.Error()))

@@ -1,36 +1,4 @@
-package model
-
-type ServiceRequestsExcel struct {
-	TNummer               string
-	KW                    int
-	Datum                 string
-	ONTStatus             string
-	Stadt                 string
-	Ort                   string
-	Straße                string
-	Hausnummer            string
-	Vertragsnehmer        string
-	Rohrfarbe             string
-	Vertragsnummer        string
-	OntSerialNummer       string
-	KVZH                  string
-	Kabel                 string
-	KabelStart            string
-	KabelEnde             string
-	GezogenesKabel        string
-	AplMontageStatus      string
-	Bemerkungen           string
-	NumberOfAssembledONTs string
-	WE                    string
-	Description           string
-	Auftragsname          string
-}
-
-type ServiceRequestsAddressExcel struct {
-	Auftragsname string
-	Email        string
-	Telefon      string
-}
+package model_json
 
 type ServiceRequests struct {
 	OdataMetadata string  `json:"odata.metadata"`

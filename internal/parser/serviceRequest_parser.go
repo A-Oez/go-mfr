@@ -7,12 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/A-Oez/MFRCli/internal/http/request"
-	"github.com/A-Oez/MFRCli/internal/model"
+	request "github.com/A-Oez/MFRCli/internal/http"
+	excelModel "github.com/A-Oez/MFRCli/internal/model/excel"
+	jsonModel "github.com/A-Oez/MFRCli/internal/model/json"
 )
 
-func GetExcelModel(tNumber string) (model.ServiceRequestsExcel, error) {
-	var serviceRequestsExcel model.ServiceRequestsExcel
+func GetExcelModel(tNumber string) (excelModel.ServiceRequestsExcel, error) {
+	var serviceRequestsExcel excelModel.ServiceRequestsExcel
 	serviceRequests, stepDataField := parseResponse(tNumber)
 
 	if stepDataField == nil {
@@ -30,8 +31,8 @@ func GetExcelModel(tNumber string) (model.ServiceRequestsExcel, error) {
 	return serviceRequestsExcel, nil
 }
 
-func GetExcelAddressModel(tNumber string) ([]model.ServiceRequestsAddressExcel, error) {
-	var serviceRequestsAddressExcelArr []model.ServiceRequestsAddressExcel
+func GetExcelAddressModel(tNumber string) ([]excelModel.ServiceRequestsAddressExcel, error) {
+	var serviceRequestsAddressExcelArr []excelModel.ServiceRequestsAddressExcel
 	serviceRequests, _ := parseResponse(tNumber)
 
 	if len(serviceRequests.Value) == 0 {
@@ -42,7 +43,8 @@ func GetExcelAddressModel(tNumber string) ([]model.ServiceRequestsAddressExcel, 
 	for customerIndex := range splittedDescrByCustomer {
 		splittedCustomer := strings.Split(splittedDescrByCustomer[customerIndex], ";")
 		if len(splittedCustomer) == 4 {
-			var serviceRequestsAddressExcel model.ServiceRequestsAddressExcel
+			var serviceRequestsAddressExcel excelModel.ServiceRequestsAddressExcel
+			serviceRequestsAddressExcel.TNummer = tNumber
 			serviceRequestsAddressExcel.Auftragsname = serviceRequests.Value[0].Name
 			serviceRequestsAddressExcel.Email = splittedCustomer[2]
 			serviceRequestsAddressExcel.Telefon = splittedCustomer[3]
@@ -55,11 +57,11 @@ func GetExcelAddressModel(tNumber string) ([]model.ServiceRequestsAddressExcel, 
 	return serviceRequestsAddressExcelArr, nil
 }
 
-func parseResponse(tNumber string) (model.ServiceRequests, []model.StepDataField) {
-	var stepDataField []model.StepDataField
-	var serviceRequests model.ServiceRequests
+func parseResponse(tNumber string) (jsonModel.ServiceRequests, []jsonModel.StepDataField) {
+	var stepDataField []jsonModel.StepDataField
+	var serviceRequests jsonModel.ServiceRequests
 
-	jsonBody := request.GetServiceRequestAndStepData(tNumber)
+	jsonBody := request.GetServiceRequestByTNumber(tNumber)
 
 	serviceRequests = parseServiceRequest(jsonBody)
 
@@ -71,8 +73,8 @@ func parseResponse(tNumber string) (model.ServiceRequests, []model.StepDataField
 	return serviceRequests, nil
 }
 
-func parseServiceRequest(jsonString string) model.ServiceRequests {
-	var serviceRequests model.ServiceRequests
+func parseServiceRequest(jsonString string) jsonModel.ServiceRequests {
+	var serviceRequests jsonModel.ServiceRequests
 	err := json.NewDecoder(strings.NewReader(jsonString)).Decode(&serviceRequests)
 	if err != nil {
 		log.Fatal(err)
@@ -81,15 +83,15 @@ func parseServiceRequest(jsonString string) model.ServiceRequests {
 	return serviceRequests
 }
 
-func parseStepData(serviceRequests model.ServiceRequests) []model.StepDataField {
-	var stepDataFieldArr []model.StepDataField
+func parseStepData(serviceRequests jsonModel.ServiceRequests) []jsonModel.StepDataField {
+	var stepDataFieldArr []jsonModel.StepDataField
 	stepArr := serviceRequests.Value[0].Steps
 
 	for stepIndex := range stepArr {
 		if relevantStepData(serviceRequests, stepIndex) {
 			jsonBytes := []byte(stepArr[stepIndex].Data)
 
-			var stepData model.StepData
+			var stepData jsonModel.StepData
 			err := json.Unmarshal(jsonBytes, &stepData)
 			if err != nil {
 
@@ -103,13 +105,13 @@ func parseStepData(serviceRequests model.ServiceRequests) []model.StepDataField 
 	return stepDataFieldArr
 }
 
-func relevantStepData(serviceRequests model.ServiceRequests, index int) bool {
+func relevantStepData(serviceRequests jsonModel.ServiceRequests, index int) bool {
 	return serviceRequests.Value[0].Steps[index].Name == "Sonstige Bemerkungen" ||
 		serviceRequests.Value[0].Steps[index].Name == "FTTX_Montage/Einblasen NVT" ||
 		serviceRequests.Value[0].Steps[index].Name == "FTTX_Montage AP"
 }
 
-func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequestsExcel *model.ServiceRequestsExcel) error {
+func assignSReqDataToExcel(serviceRequests jsonModel.ServiceRequests, serviceRequestsExcel *excelModel.ServiceRequestsExcel) error {
 	//date + kw
 	if len(serviceRequests.Value[0].Appointments) > 0 {
 		timeObj, _ := time.Parse(time.RFC3339, serviceRequests.Value[0].Appointments[0].EndDateTime)
@@ -156,7 +158,7 @@ func assignSReqDataToExcel(serviceRequests model.ServiceRequests, serviceRequest
 	return nil
 }
 
-func assignStepDataToExcel(stepDataField []model.StepDataField, serviceRequestsExcel *model.ServiceRequestsExcel) {
+func assignStepDataToExcel(stepDataField []jsonModel.StepDataField, serviceRequestsExcel *excelModel.ServiceRequestsExcel) {
 
 	for _, stepData := range stepDataField {
 		switch stepData.Name {

@@ -1,4 +1,4 @@
-package request
+package http
 
 import (
 	"fmt"
@@ -6,14 +6,14 @@ import (
 	"net/url"
 	"strconv"
 
-	httpUtil "github.com/A-Oez/MFRCli/pkg/httpUtils"
+	httpUtils "github.com/A-Oez/MFRCli/pkg/httpUtils"
 )
 
-func GetServiceRequestAndStepData(tNumber string) string {
+func GetServiceRequestByTNumber(tNumber string) string {
 	encodedTNumber := url.QueryEscape(tNumber)
 	apiUrl := fmt.Sprintf("https://portal.mobilefieldreport.com/odata/ServiceRequests?$filter=ExternalId%%20eq%%20'%s'&$expand=Appointments,Steps%%0A", encodedTNumber)
 
-	statusCode, jsonBody := httpUtil.HttpGetRequest(apiUrl)
+	statusCode, jsonBody := httpUtils.HttpGetRequest(apiUrl)
 
 	if statusCode != 200 {
 		log.Fatal("http statuscode: " + strconv.Itoa(statusCode) + "| t-number: " + tNumber)
