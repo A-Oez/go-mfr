@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
-	httpUtils "github.com/A-Oez/MFRCli/pkg/httpUtils"
+	httpUtils "github.com/A-Oez/MFRCli/pkg/http_utils"
 )
 
 func GetSREQByTNumber(tNumber string) string {

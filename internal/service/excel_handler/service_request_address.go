@@ -12,7 +12,7 @@ import (
 
 	_ "github.com/A-Oez/MFRCli/internal/interfaces"
 	pReader "github.com/A-Oez/MFRCli/pkg"
-	excelutils "github.com/A-Oez/MFRCli/pkg/excelutils"
+	excelUtils "github.com/A-Oez/MFRCli/pkg/excel_utils"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -53,7 +53,7 @@ func (sreq *SREQAddress) WriteExcel(filePath string, model interface{}) {
 
 		sheetName := pReader.GetProperty("serviceRequestAddress")
 
-		row := excelutils.FindNextEmptyRow(file, sheetName)
+		row := excelUtils.FindNextEmptyRow(file, sheetName)
 
 		data := map[string]interface{}{
 			"A": excelModel.Auftragsname,

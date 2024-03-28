@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	excelUtils "github.com/A-Oez/MFRCli/pkg/excelutils"
+	excelUtils "github.com/A-Oez/MFRCli/pkg/excel_utils"
 
 	excelHandler "github.com/A-Oez/MFRCli/internal/service/excel_handler"
 
