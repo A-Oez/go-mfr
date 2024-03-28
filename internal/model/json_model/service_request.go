@@ -1,4 +1,4 @@
-package model_json
+package json_model
 
 type ServiceRequests struct {
 	OdataMetadata string  `json:"odata.metadata"`

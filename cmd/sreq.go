@@ -5,9 +5,11 @@ import (
 
 	excelUtils "github.com/A-Oez/MFRCli/pkg/excelutils"
 
-	parser "github.com/A-Oez/MFRCli/internal/parser"
+	excelHandler "github.com/A-Oez/MFRCli/internal/service/excel_handler"
 
 	pReader "github.com/A-Oez/MFRCli/pkg"
+
+	excelModel "github.com/A-Oez/MFRCli/internal/model/excel_model"
 
 	"github.com/spf13/cobra"
 
@@ -37,42 +39,46 @@ func cmdRun(cmd *cobra.Command, args []string) {
 	tNumbers := excelUtils.GetTNumbers(excelPath)
 
 	if exp {
-		exportServiceRequests(excelPath, tNumbers)
+		exportGeneralSREQ(excelPath, tNumbers)
 	} else if ter {
-		exportServiceRequestsAddress(excelPath, tNumbers)
+		exportAddressSREQ(excelPath, tNumbers)
 	}
 }
 
-func exportServiceRequests(excelPath string, tNumbers []string) {
-	var excelWriter interfaces.ExcelWriter
+func exportGeneralSREQ(excelPath string, tNumbers []string) {
+	var excelParser interfaces.ExcelParser = &excelHandler.SREQGeneral{}
+	var excelWriter interfaces.ExcelWriter = &excelHandler.SREQGeneral{}
 
 	for i := range tNumbers {
-		excelServiceRequest, err := parser.GetExcelModel(tNumbers[i])
-		if err == nil {
-			excelWriter = &excelServiceRequest
-			excelWriter.WriteExcel(excelPath, excelServiceRequest)
-		} else {
-			fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestExport"), tNumbers[i], err.Error()))
-		}
-	}
+		model, err := excelParser.GetExcelModel(tNumbers[i])
 
-}
-
-func exportServiceRequestsAddress(excelPath string, tNumbers []string) {
-	var excelWriter interfaces.ExcelWriter
-
-	for i := range tNumbers {
-		excelServiceRequestAddressArr, err := parser.GetExcelAddressModel(tNumbers[i])
-
-		if err == nil {
-			for j := range excelServiceRequestAddressArr {
-				excelServiceRequestAddress := excelServiceRequestAddressArr[j]
-
-				excelWriter = &excelServiceRequestAddress
-				excelWriter.WriteExcel(excelPath, excelServiceRequestAddressArr[j])
+		if SREQGeneral, ok := model.(excelModel.SREQGeneral); ok {
+			if err == nil {
+				excelWriter.WriteExcel(excelPath, SREQGeneral)
+			} else {
+				fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestExport"), tNumbers[i], err.Error()))
 			}
-		} else {
-			fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestAddress"), tNumbers[i], err.Error()))
 		}
+	}
+
+}
+
+func exportAddressSREQ(excelPath string, tNumbers []string) {
+	var excelParser interfaces.ExcelParser = &excelHandler.SREQAddress{}
+	var excelWriter interfaces.ExcelWriter = &excelHandler.SREQAddress{}
+
+	for i := range tNumbers {
+		model, err := excelParser.GetExcelModel(tNumbers[i])
+
+		if SREQAddressArr, ok := model.([]excelModel.SREQAddress); ok {
+			if err == nil {
+				for j := range SREQAddressArr {
+					excelWriter.WriteExcel(excelPath, SREQAddressArr[j])
+				}
+			} else {
+				fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestAddress"), tNumbers[i], err.Error()))
+			}
+		}
+
 	}
 }
