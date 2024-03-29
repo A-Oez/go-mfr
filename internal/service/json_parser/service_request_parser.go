@@ -9,8 +9,8 @@ import (
 	jsonModel "github.com/A-Oez/MFRCli/internal/model/json_model"
 )
 
-func ParseSREQResponse(tNumber string) (jsonModel.ServiceRequests, []jsonModel.StepDataField) {
-	var serviceRequests jsonModel.ServiceRequests
+func ParseSREQResponse(tNumber string) (jsonModel.ServiceRequestResponse, []jsonModel.StepDataField) {
+	var serviceRequests jsonModel.ServiceRequestResponse
 	var stepDataField []jsonModel.StepDataField
 
 	jsonBody := request.GetSREQByTNumber(tNumber)
@@ -28,7 +28,7 @@ func ParseSREQResponse(tNumber string) (jsonModel.ServiceRequests, []jsonModel.S
 	return serviceRequests, nil
 }
 
-func parseStepData(serviceRequests jsonModel.ServiceRequests) []jsonModel.StepDataField {
+func parseStepData(serviceRequests jsonModel.ServiceRequestResponse) []jsonModel.StepDataField {
 	var stepDataFieldArr []jsonModel.StepDataField
 	stepArr := serviceRequests.Value[0].Steps
 
@@ -50,7 +50,7 @@ func parseStepData(serviceRequests jsonModel.ServiceRequests) []jsonModel.StepDa
 	return stepDataFieldArr
 }
 
-func relevantStepData(serviceRequests jsonModel.ServiceRequests, index int) bool {
+func relevantStepData(serviceRequests jsonModel.ServiceRequestResponse, index int) bool {
 	return serviceRequests.Value[0].Steps[index].Name == "Sonstige Bemerkungen" ||
 		serviceRequests.Value[0].Steps[index].Name == "FTTX_Montage/Einblasen NVT" ||
 		serviceRequests.Value[0].Steps[index].Name == "FTTX_Montage AP"

@@ -1,6 +1,6 @@
 package json_model
 
-type ServiceRequests struct {
+type ServiceRequestResponse struct {
 	OdataMetadata string  `json:"odata.metadata"`
 	Value         []Value `json:"value"`
 }

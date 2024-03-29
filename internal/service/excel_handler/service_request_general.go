@@ -89,7 +89,7 @@ func (e *SREQGeneral) GetExcelModel(tNumber string) (interface{}, error) {
 	return SREQGeneral, nil
 }
 
-func assignSReqDataToExcel(serviceRequests jsonModel.ServiceRequests, SREQGeneral *excelModel.SREQGeneral) error {
+func assignSReqDataToExcel(serviceRequests jsonModel.ServiceRequestResponse, SREQGeneral *excelModel.SREQGeneral) error {
 	//date + kw
 	if len(serviceRequests.Value[0].Appointments) > 0 {
 		timeObj, _ := time.Parse(time.RFC3339, serviceRequests.Value[0].Appointments[0].EndDateTime)
