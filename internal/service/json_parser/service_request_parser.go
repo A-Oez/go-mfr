@@ -5,15 +5,22 @@ import (
 	"log"
 	"strings"
 
-	request "github.com/A-Oez/MFRCli/internal/http"
+	"github.com/A-Oez/MFRCli/internal/http"
+	"github.com/A-Oez/MFRCli/internal/interfaces"
 	jsonModel "github.com/A-Oez/MFRCli/internal/model/json_model"
 )
+
+var HttpGetService interfaces.HttpGetByTNumber
+
+func init() {
+	HttpGetService = &http.SREQHttpHandler{}
+}
 
 func ParseSREQResponse(tNumber string) (jsonModel.ServiceRequestResponse, []jsonModel.StepDataField) {
 	var serviceRequests jsonModel.ServiceRequestResponse
 	var stepDataField []jsonModel.StepDataField
 
-	jsonBody := request.GetSREQByTNumber(tNumber)
+	jsonBody := HttpGetService.GetByTNumber(tNumber)
 
 	err := json.NewDecoder(strings.NewReader(jsonBody)).Decode(&serviceRequests)
 	if err != nil {

@@ -12,7 +12,6 @@ import (
 	jsonModel "github.com/A-Oez/MFRCli/internal/model/json_model"
 	jsonParser "github.com/A-Oez/MFRCli/internal/service/json_parser"
 
-	_ "github.com/A-Oez/MFRCli/internal/interfaces"
 	pReader "github.com/A-Oez/MFRCli/pkg"
 	excelUtils "github.com/A-Oez/MFRCli/pkg/excel_utils"
 	"github.com/xuri/excelize/v2"
@@ -20,57 +19,7 @@ import (
 
 type SREQGeneral struct{}
 
-func (sreq SREQGeneral) WriteExcel(filePath string, model interface{}) {
-	if excelModel, ok := model.(excelModel.SREQGeneral); ok {
-		file, err := excelize.OpenFile(filePath)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		sheetName := pReader.GetProperty("serviceRequestExport")
-
-		row := excelUtils.FindNextEmptyRow(file, sheetName)
-
-		data := map[string]interface{}{
-			"A": excelModel.TNummer,
-			"B": excelModel.KW,
-			"C": excelModel.Datum,
-			"D": excelModel.ONTStatus,
-			"E": excelModel.Stadt,
-			"F": excelModel.Ort,
-			"G": excelModel.Straße,
-			"H": excelModel.Hausnummer,
-			"I": excelModel.Vertragsnehmer,
-			"J": excelModel.Rohrfarbe,
-			"K": excelModel.Vertragsnummer,
-			"L": excelModel.OntSerialNummer,
-			"M": excelModel.KVZH,
-			"N": excelModel.Kabel,
-			"O": excelModel.KabelStart,
-			"P": excelModel.KabelEnde,
-			"Q": excelModel.GezogenesKabel,
-			"R": excelModel.AplMontageStatus,
-			"S": excelModel.Bemerkungen,
-			"T": excelModel.NumberOfAssembledONTs,
-			"U": excelModel.WE,
-		}
-
-		for col, value := range data {
-			cell := fmt.Sprintf("%s%d", col, row)
-			if err := file.SetCellValue(sheetName, cell, value); err != nil {
-				log.Fatal(err)
-			}
-		}
-
-		if err := file.Save(); err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println(fmt.Sprintf("* %s %s", pReader.GetProperty("serviceRequestExport"), excelModel.TNummer))
-	}
-}
-
-func (e *SREQGeneral) GetExcelModel(tNumber string) (interface{}, error) {
+func (sreq *SREQGeneral) GetExcelModel(tNumber string) (excelModel.SREQGeneral, error) {
 	var SREQGeneral excelModel.SREQGeneral
 	serviceRequests, stepDataField := jsonParser.ParseSREQResponse(tNumber)
 
@@ -165,4 +114,53 @@ func assignStepDataToExcel(stepDataField []jsonModel.StepDataField, SREQGeneral 
 		}
 
 	}
+}
+
+func (sreq *SREQGeneral) WriteExcel(filePath string, excelModel excelModel.SREQGeneral) {
+	file, err := excelize.OpenFile(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sheetName := pReader.GetProperty("serviceRequestExport")
+
+	row := excelUtils.FindNextEmptyRow(file, sheetName)
+
+	data := map[string]interface{}{
+		"A": excelModel.TNummer,
+		"B": excelModel.KW,
+		"C": excelModel.Datum,
+		"D": excelModel.ONTStatus,
+		"E": excelModel.Stadt,
+		"F": excelModel.Ort,
+		"G": excelModel.Straße,
+		"H": excelModel.Hausnummer,
+		"I": excelModel.Vertragsnehmer,
+		"J": excelModel.Rohrfarbe,
+		"K": excelModel.Vertragsnummer,
+		"L": excelModel.OntSerialNummer,
+		"M": excelModel.KVZH,
+		"N": excelModel.Kabel,
+		"O": excelModel.KabelStart,
+		"P": excelModel.KabelEnde,
+		"Q": excelModel.GezogenesKabel,
+		"R": excelModel.AplMontageStatus,
+		"S": excelModel.Bemerkungen,
+		"T": excelModel.NumberOfAssembledONTs,
+		"U": excelModel.WE,
+	}
+
+	for col, value := range data {
+		cell := fmt.Sprintf("%s%d", col, row)
+		if err := file.SetCellValue(sheetName, cell, value); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if err := file.Save(); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(fmt.Sprintf("* %s %s", pReader.GetProperty("serviceRequestExport"), excelModel.TNummer))
+
 }

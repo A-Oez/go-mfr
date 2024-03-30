@@ -6,10 +6,13 @@ import (
 	"net/url"
 	"strconv"
 
+	_ "github.com/A-Oez/MFRCli/internal/interfaces"
 	httpUtils "github.com/A-Oez/MFRCli/pkg/http_utils"
 )
 
-func GetSREQByTNumber(tNumber string) string {
+type SREQHttpHandler struct{}
+
+func (h *SREQHttpHandler) GetByTNumber(tNumber string) string {
 	encodedTNumber := url.QueryEscape(tNumber)
 	apiUrl := fmt.Sprintf("https://portal.mobilefieldreport.com/odata/ServiceRequests?$filter=ExternalId%%20eq%%20'%s'&$expand=Appointments,Steps%%0A", encodedTNumber)
 

@@ -9,11 +9,7 @@ import (
 
 	pReader "github.com/A-Oez/MFRCli/pkg"
 
-	excelModel "github.com/A-Oez/MFRCli/internal/model/excel_model"
-
 	"github.com/spf13/cobra"
-
-	interfaces "github.com/A-Oez/MFRCli/internal/interfaces"
 )
 
 var sreqCmd = &cobra.Command{
@@ -46,38 +42,35 @@ func cmdRun(cmd *cobra.Command, args []string) {
 }
 
 func exportGeneralSREQ(excelPath string, tNumbers []string) {
-	var excelParser interfaces.ExcelParser = &excelHandler.SREQGeneral{}
-	var excelWriter interfaces.ExcelWriter = &excelHandler.SREQGeneral{}
+	var excelParser = &excelHandler.SREQGeneral{}
+	var excelWriter = &excelHandler.SREQGeneral{}
 
 	for i := range tNumbers {
-		model, err := excelParser.GetExcelModel(tNumbers[i])
+		SREQGeneral, err := excelParser.GetExcelModel(tNumbers[i])
 
-		if SREQGeneral, ok := model.(excelModel.SREQGeneral); ok {
-			if err == nil {
-				excelWriter.WriteExcel(excelPath, SREQGeneral)
-			} else {
-				fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestExport"), tNumbers[i], err.Error()))
-			}
+		if err == nil {
+			excelWriter.WriteExcel(excelPath, SREQGeneral)
+		} else {
+			fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestExport"), tNumbers[i], err.Error()))
 		}
+
 	}
 
 }
 
 func exportAddressSREQ(excelPath string, tNumbers []string) {
-	var excelParser interfaces.ExcelParser = &excelHandler.SREQAddress{}
-	var excelWriter interfaces.ExcelWriter = &excelHandler.SREQAddress{}
+	var excelParser = &excelHandler.SREQAddress{}
+	var excelWriter = &excelHandler.SREQAddress{}
 
 	for i := range tNumbers {
-		model, err := excelParser.GetExcelModel(tNumbers[i])
+		SREQAddressArr, err := excelParser.GetExcelModel(tNumbers[i])
 
-		if SREQAddressArr, ok := model.([]excelModel.SREQAddress); ok {
-			if err == nil {
-				for j := range SREQAddressArr {
-					excelWriter.WriteExcel(excelPath, SREQAddressArr[j])
-				}
-			} else {
-				fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestAddress"), tNumbers[i], err.Error()))
+		if err == nil {
+			for j := range SREQAddressArr {
+				excelWriter.WriteExcel(excelPath, SREQAddressArr[j])
 			}
+		} else {
+			fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestAddress"), tNumbers[i], err.Error()))
 		}
 
 	}

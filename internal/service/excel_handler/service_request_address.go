@@ -10,7 +10,6 @@ import (
 	excelModel "github.com/A-Oez/MFRCli/internal/model/excel_model"
 	jsonParser "github.com/A-Oez/MFRCli/internal/service/json_parser"
 
-	_ "github.com/A-Oez/MFRCli/internal/interfaces"
 	pReader "github.com/A-Oez/MFRCli/pkg"
 	excelUtils "github.com/A-Oez/MFRCli/pkg/excel_utils"
 	"github.com/xuri/excelize/v2"
@@ -18,7 +17,7 @@ import (
 
 type SREQAddress struct{}
 
-func (e *SREQAddress) GetExcelModel(tNumber string) (interface{}, error) {
+func (sreq *SREQAddress) GetExcelModel(tNumber string) ([]excelModel.SREQAddress, error) {
 	var SREQAddressArr []excelModel.SREQAddress
 	serviceRequests, _ := jsonParser.ParseSREQResponse(tNumber)
 
@@ -44,34 +43,33 @@ func (e *SREQAddress) GetExcelModel(tNumber string) (interface{}, error) {
 	return SREQAddressArr, nil
 }
 
-func (sreq *SREQAddress) WriteExcel(filePath string, model interface{}) {
-	if excelModel, ok := model.(excelModel.SREQAddress); ok {
-		file, err := excelize.OpenFile(filePath)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		sheetName := pReader.GetProperty("serviceRequestAddress")
-
-		row := excelUtils.FindNextEmptyRow(file, sheetName)
-
-		data := map[string]interface{}{
-			"A": excelModel.Auftragsname,
-			"B": excelModel.Email,
-			"C": excelModel.Telefon,
-		}
-
-		for col, value := range data {
-			cell := fmt.Sprintf("%s%d", col, row)
-			if err := file.SetCellValue(sheetName, cell, value); err != nil {
-				log.Fatal(err)
-			}
-		}
-
-		if err := file.Save(); err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println(fmt.Sprintf("* %s %s", pReader.GetProperty("serviceRequestAddress"), excelModel.TNummer))
+func (sreq *SREQAddress) WriteExcel(filePath string, excelModel excelModel.SREQAddress) {
+	file, err := excelize.OpenFile(filePath)
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	sheetName := pReader.GetProperty("serviceRequestAddress")
+
+	row := excelUtils.FindNextEmptyRow(file, sheetName)
+
+	data := map[string]interface{}{
+		"A": excelModel.Auftragsname,
+		"B": excelModel.Email,
+		"C": excelModel.Telefon,
+	}
+
+	for col, value := range data {
+		cell := fmt.Sprintf("%s%d", col, row)
+		if err := file.SetCellValue(sheetName, cell, value); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if err := file.Save(); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(fmt.Sprintf("* %s %s", pReader.GetProperty("serviceRequestAddress"), excelModel.TNummer))
+
 }
