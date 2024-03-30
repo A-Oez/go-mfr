@@ -5,7 +5,7 @@ import (
 
 	excelUtils "github.com/A-Oez/MFRCli/pkg/excel_utils"
 
-	excelHandler "github.com/A-Oez/MFRCli/internal/service/excel_handler"
+	"github.com/A-Oez/MFRCli/internal/service/excel_handler"
 
 	pReader "github.com/A-Oez/MFRCli/pkg"
 
@@ -42,14 +42,13 @@ func cmdRun(cmd *cobra.Command, args []string) {
 }
 
 func exportGeneralSREQ(excelPath string, tNumbers []string) {
-	var excelParser = &excelHandler.SREQGeneral{}
-	var excelWriter = &excelHandler.SREQGeneral{}
+	var excelHandler = &excel_handler.SREQGeneral{}
 
 	for i := range tNumbers {
-		SREQGeneral, err := excelParser.GetExcelModel(tNumbers[i])
+		SREQGeneral, err := excelHandler.GetExcelModel(tNumbers[i])
 
 		if err == nil {
-			excelWriter.WriteExcel(excelPath, SREQGeneral)
+			excelHandler.WriteExcel(excelPath, SREQGeneral)
 		} else {
 			fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestExport"), tNumbers[i], err.Error()))
 		}
@@ -59,15 +58,14 @@ func exportGeneralSREQ(excelPath string, tNumbers []string) {
 }
 
 func exportAddressSREQ(excelPath string, tNumbers []string) {
-	var excelParser = &excelHandler.SREQAddress{}
-	var excelWriter = &excelHandler.SREQAddress{}
+	var excelHandler = &excel_handler.SREQAddress{}
 
 	for i := range tNumbers {
-		SREQAddressArr, err := excelParser.GetExcelModel(tNumbers[i])
+		SREQAddressArr, err := excelHandler.GetExcelModel(tNumbers[i])
 
 		if err == nil {
 			for j := range SREQAddressArr {
-				excelWriter.WriteExcel(excelPath, SREQAddressArr[j])
+				excelHandler.WriteExcel(excelPath, SREQAddressArr[j])
 			}
 		} else {
 			fmt.Println(fmt.Sprintf("* %s %s %s", pReader.GetProperty("serviceRequestAddress"), tNumbers[i], err.Error()))
