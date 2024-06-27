@@ -75,7 +75,7 @@ func assignSReqDataToExcel(serviceRequests jsonModel.ServiceRequestResponse, SRE
 			break
 		} else {
 			assignVNValues(customerIndex, splittedCustomer[0], SREQGeneral)
-			SREQGeneral.Vertragsnehmer += fmt.Sprintf("%d.%s | ", customerIndex + 1, splittedCustomer[1])
+			SREQGeneral.Vertragsnehmer += fmt.Sprintf("%s | ", splittedCustomer[1])
 		}
 	}
 
