@@ -2,7 +2,6 @@ package excel_handler
 
 import (
 	"errors"
-	"reflect"
 	"strings"
 	"time"
 
@@ -75,11 +74,7 @@ func assignSReqDataToExcel(serviceRequests jsonModel.ServiceRequestResponse, SRE
 			SREQGeneral.Vertragsnehmer = serviceRequests.Value[0].Description
 			break
 		} else {
-			//used reflection to add Vertragsnummer 1-4 fields dynamically 
-			vnIndex := fmt.Sprintf("Vertragsnummer%s", customerIndex + 1) 
-			vnField := reflect.ValueOf(SREQGeneral).Elem().FieldByName(vnIndex)
-			vnField.SetString(splittedCustomer[0])
-
+			assignVNValues(customerIndex, splittedCustomer[0], SREQGeneral)
 			SREQGeneral.Vertragsnehmer += splittedCustomer[1] + "\r\n"
 		}
 	}
@@ -134,6 +129,19 @@ func assignStepDataToExcel(stepDataField []jsonModel.StepDataField, SREQGeneral 
 			}
 		}
 
+	}
+}
+
+func assignVNValues(customerIndex int, vnValue string, SREQGeneral *excelModel.SREQGeneral){
+	switch customerIndex{
+		case 0:
+			SREQGeneral.Vertragsnummer1 = vnValue
+		case 1:
+			SREQGeneral.Vertragsnummer2 = vnValue
+		case 2:
+			SREQGeneral.Vertragsnummer3 = vnValue
+		case 3:
+			SREQGeneral.Vertragsnummer4 = vnValue
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/A-Oez/MFRCli/internal/service/excel_handler"
@@ -20,9 +21,9 @@ func init() {
 	json_parser.HttpGetService = &MockHttpGetByTNumber{}
 }
 
-func StartExcelWriter(t *testing.T) {
+func TestExcelWriter(t *testing.T) {
 	var excelHandler = &excel_handler.SREQGeneral{}
-	excelPath := "../test_files/template_mfr_export.xlsx"
+	excelPath := filepath.Join("..", "..", "test_files", "template_mfr_export.xlsx")
 	SREQGeneral, err := excelHandler.GetExcelModel("_")
 
 	if err == nil {
@@ -33,12 +34,12 @@ func StartExcelWriter(t *testing.T) {
 }
 
 func getJsonFileByID(jsonID string) string{
-	path := fmt.Sprintf("../test_files/json_%s.json", jsonID)
+	jsonFile := fmt.Sprintf("../test_files/json_%s.json", jsonID)
+	filePath := filepath.Join("..", "..", "test_files", jsonFile)
 
-	content, err := os.ReadFile(path)
+	content, err := os.ReadFile(filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	return string(content)
 }
