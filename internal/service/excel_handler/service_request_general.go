@@ -2,6 +2,7 @@ package excel_handler
 
 import (
 	"errors"
+	"reflect"
 	"strings"
 	"time"
 
@@ -27,13 +28,14 @@ func (sreq *SREQGeneral) GetExcelModel(tNumber string) (excelModel.SREQGeneral, 
 		return SREQGeneral, errors.New("-- ERROR | Keine Checklisten hinterlegt")
 	}
 
-	assignStepDataToExcel(stepDataField, &SREQGeneral)
+	SREQGeneral.TNummer = tNumber
 	err := assignSReqDataToExcel(serviceRequests, &SREQGeneral)
-
 	if err != nil {
 		return SREQGeneral, errors.New("-- ERROR | " + err.Error())
 	}
-	SREQGeneral.TNummer = tNumber
+
+	//method overwrites excel columns from step data (checklists)  
+	assignStepDataToExcel(stepDataField, &SREQGeneral)
 
 	return SREQGeneral, nil
 }
@@ -73,7 +75,11 @@ func assignSReqDataToExcel(serviceRequests jsonModel.ServiceRequestResponse, SRE
 			SREQGeneral.Vertragsnehmer = serviceRequests.Value[0].Description
 			break
 		} else {
-			SREQGeneral.Vertragsnummer += splittedCustomer[0] + "\r\n"
+			//used reflection to add Vertragsnummer 1-4 fields dynamically 
+			vnIndex := fmt.Sprintf("Vertragsnummer%s", customerIndex + 1) 
+			vnField := reflect.ValueOf(SREQGeneral).Elem().FieldByName(vnIndex)
+			vnField.SetString(splittedCustomer[0])
+
 			SREQGeneral.Vertragsnehmer += splittedCustomer[1] + "\r\n"
 		}
 	}
@@ -85,14 +91,29 @@ func assignSReqDataToExcel(serviceRequests jsonModel.ServiceRequestResponse, SRE
 	return nil
 }
 
-func assignStepDataToExcel(stepDataField []jsonModel.StepDataField, SREQGeneral *excelModel.SREQGeneral) {
-
+func assignStepDataToExcel(stepDataField []jsonModel.StepDataField, SREQGeneral *excelModel.SREQGeneral){
 	for _, stepData := range stepDataField {
 		switch stepData.Name {
 		case "Verband & Röhrchen Farbe NVT? (Foto)":
 			SREQGeneral.Rohrfarbe = stepData.Result
 		case "ONT Seriennummer?":
-			SREQGeneral.OntSerialNummer = stepData.Result
+			SREQGeneral.OntSerialNummer1 = stepData.Result
+		case "1. ONT Seriennummer?":
+			SREQGeneral.OntSerialNummer1 = stepData.Result
+		case "2. ONT Seriennummer?":
+			SREQGeneral.OntSerialNummer2 = stepData.Result
+		case "3. ONT Seriennummer?":
+			SREQGeneral.OntSerialNummer3 = stepData.Result
+		case "4. ONT Seriennummer?":
+			SREQGeneral.OntSerialNummer4 = stepData.Result
+		case "1. ONT KDnr?":
+			SREQGeneral.Vertragsnummer1 = stepData.Result
+		case "2. ONT KDnr?":
+			SREQGeneral.Vertragsnummer1 = stepData.Result
+		case "3. ONT KDnr?":
+			SREQGeneral.Vertragsnummer1 = stepData.Result
+		case "4. ONT KDnr?":
+			SREQGeneral.Vertragsnummer1 = stepData.Result
 		case "Art des Microkabels?":
 			SREQGeneral.Kabel = stepData.Result
 		case "KVZ Nummer?":
@@ -116,6 +137,7 @@ func assignStepDataToExcel(stepDataField []jsonModel.StepDataField, SREQGeneral 
 	}
 }
 
+
 func (sreq *SREQGeneral) WriteExcel(filePath string, excelModel excelModel.SREQGeneral) {
 	file, err := excelize.OpenFile(filePath)
 	if err != nil {
@@ -137,17 +159,23 @@ func (sreq *SREQGeneral) WriteExcel(filePath string, excelModel excelModel.SREQG
 		"H": excelModel.Hausnummer,
 		"I": excelModel.Vertragsnehmer,
 		"J": excelModel.Rohrfarbe,
-		"K": excelModel.Vertragsnummer,
-		"L": excelModel.OntSerialNummer,
-		"M": excelModel.KVZH,
-		"N": excelModel.Kabel,
-		"O": excelModel.KabelStart,
-		"P": excelModel.KabelEnde,
-		"Q": excelModel.GezogenesKabel,
-		"R": excelModel.AplMontageStatus,
-		"S": excelModel.Bemerkungen,
-		"T": excelModel.NumberOfAssembledONTs,
-		"U": excelModel.WE,
+		"K": excelModel.Vertragsnummer1,
+		"L": excelModel.Vertragsnummer2,
+		"M": excelModel.Vertragsnummer3,
+		"N": excelModel.Vertragsnummer4,
+		"O": excelModel.OntSerialNummer1,
+		"P": excelModel.OntSerialNummer2,
+		"Q": excelModel.OntSerialNummer3,
+		"R": excelModel.OntSerialNummer4,
+		"S": excelModel.KVZH,
+		"T": excelModel.Kabel,
+		"U": excelModel.KabelStart,
+		"V": excelModel.KabelEnde,
+		"W": excelModel.GezogenesKabel,
+		"X": excelModel.AplMontageStatus,
+		"Y": excelModel.Bemerkungen,
+		"Z": excelModel.NumberOfAssembledONTs,
+		"AA": excelModel.WE,
 	}
 
 	for col, value := range data {

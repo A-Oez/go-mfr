@@ -11,8 +11,14 @@ type SREQGeneral struct {
 	Hausnummer            string
 	Vertragsnehmer        string
 	Rohrfarbe             string
-	Vertragsnummer        string
-	OntSerialNummer       string
+	Vertragsnummer1       string
+	Vertragsnummer2       string
+	Vertragsnummer3       string
+	Vertragsnummer4       string
+	OntSerialNummer1      string
+	OntSerialNummer2      string
+	OntSerialNummer3      string
+	OntSerialNummer4      string
 	KVZH                  string
 	Kabel                 string
 	KabelStart            string

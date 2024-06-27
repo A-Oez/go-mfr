@@ -8,9 +8,9 @@ import (
 	json_parser "github.com/A-Oez/MFRCli/internal/service/json_parser"
 )
 
-type MockHttpGetByTNumber struct{}
+type DescrMockHttpGetByTNumber struct{}
 
-func (h *MockHttpGetByTNumber) GetByTNumber(tNumber string) string {
+func (h *DescrMockHttpGetByTNumber) GetByTNumber(tNumber string) string {
 	descriptionPlaceholder := "Kundennummer:1234;NAME;EMAIL;TELEFON"
 
 	jsonString := `{
@@ -51,12 +51,14 @@ func (h *MockHttpGetByTNumber) GetByTNumber(tNumber string) string {
 }
 
 func init() {
-	json_parser.HttpGetService = &MockHttpGetByTNumber{}
+	json_parser.HttpGetService = &DescrMockHttpGetByTNumber{}
 }
 
 func TestGetExcelModel(t *testing.T) {
 	var excelParser = &excelHandler.SREQAddress{}
 	_, err := excelParser.GetExcelModel("test")
+
+	//TODO: extend test with excelwriter & create gitignore with ignored folder test_files
 
 	if err != nil {
 		t.Fatalf("GetExcelModel returned an error: %v", err)
