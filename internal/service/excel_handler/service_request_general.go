@@ -75,7 +75,7 @@ func assignSReqDataToExcel(serviceRequests jsonModel.ServiceRequestResponse, SRE
 			break
 		} else {
 			assignVNValues(customerIndex, splittedCustomer[0], SREQGeneral)
-			SREQGeneral.Vertragsnehmer += splittedCustomer[1] + "\r\n"
+			SREQGeneral.Vertragsnehmer += fmt.Sprintf("%d.%s | ", customerIndex + 1, splittedCustomer[1])
 		}
 	}
 
@@ -104,11 +104,11 @@ func assignStepDataToExcel(stepDataField []jsonModel.StepDataField, SREQGeneral 
 		case "1. ONT KDnr?":
 			SREQGeneral.Vertragsnummer1 = stepData.Result
 		case "2. ONT KDnr?":
-			SREQGeneral.Vertragsnummer1 = stepData.Result
+			SREQGeneral.Vertragsnummer2 = stepData.Result
 		case "3. ONT KDnr?":
-			SREQGeneral.Vertragsnummer1 = stepData.Result
+			SREQGeneral.Vertragsnummer3 = stepData.Result
 		case "4. ONT KDnr?":
-			SREQGeneral.Vertragsnummer1 = stepData.Result
+			SREQGeneral.Vertragsnummer4 = stepData.Result
 		case "Art des Microkabels?":
 			SREQGeneral.Kabel = stepData.Result
 		case "KVZ Nummer?":
@@ -135,13 +135,13 @@ func assignStepDataToExcel(stepDataField []jsonModel.StepDataField, SREQGeneral 
 func assignVNValues(customerIndex int, vnValue string, SREQGeneral *excelModel.SREQGeneral){
 	switch customerIndex{
 		case 0:
-			SREQGeneral.Vertragsnummer1 = vnValue
+			SREQGeneral.Vertragsnummer1 = strings.Split(vnValue, ":")[1]
 		case 1:
-			SREQGeneral.Vertragsnummer2 = vnValue
+			SREQGeneral.Vertragsnummer2 = strings.Split(vnValue, ":")[1] 
 		case 2:
-			SREQGeneral.Vertragsnummer3 = vnValue
+			SREQGeneral.Vertragsnummer3 = strings.Split(vnValue, ":")[1] 
 		case 3:
-			SREQGeneral.Vertragsnummer4 = vnValue
+			SREQGeneral.Vertragsnummer4 = strings.Split(vnValue, ":")[1]
 	}
 }
 
