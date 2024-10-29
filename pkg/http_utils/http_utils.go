@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	pReader "github.com/A-Oez/MFRCli/pkg"
+	pReader "github.com/A-Oez/go-mfr/pkg"
 )
 
 func HttpGetRequest(url string) (statusCode int, body string) {

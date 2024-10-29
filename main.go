@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/A-Oez/MFRCli/cmd"
+	"github.com/A-Oez/go-mfr/cmd"
 )
 
 func main() {

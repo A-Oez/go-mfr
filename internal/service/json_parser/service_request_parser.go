@@ -5,9 +5,9 @@ import (
 	"log"
 	"strings"
 
-	"github.com/A-Oez/MFRCli/internal/http"
-	"github.com/A-Oez/MFRCli/internal/interfaces"
-	jsonModel "github.com/A-Oez/MFRCli/internal/model/json_model"
+	"github.com/A-Oez/go-mfr/internal/http"
+	"github.com/A-Oez/go-mfr/internal/interfaces"
+	jsonModel "github.com/A-Oez/go-mfr/internal/model/json_model"
 )
 
 var HttpGetService interfaces.HttpGetByTNumber

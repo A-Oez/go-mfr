@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/A-Oez/MFRCli/internal/service/excel_handler"
-	json_parser "github.com/A-Oez/MFRCli/internal/service/json_parser"
+	"github.com/A-Oez/go-mfr/internal/service/excel_handler"
+	json_parser "github.com/A-Oez/go-mfr/internal/service/json_parser"
 )
 
 type MockHttpGetByTNumber struct{}

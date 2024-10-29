@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strconv"
 
-	_ "github.com/A-Oez/MFRCli/internal/interfaces"
-	httpUtils "github.com/A-Oez/MFRCli/pkg/http_utils"
+	_ "github.com/A-Oez/go-mfr/internal/interfaces"
+	httpUtils "github.com/A-Oez/go-mfr/pkg/http_utils"
 )
 
 type SREQHttpHandler struct{}

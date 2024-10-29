@@ -3,11 +3,11 @@ package cmd
 import (
 	"fmt"
 
-	excelUtils "github.com/A-Oez/MFRCli/pkg/excel_utils"
+	excelUtils "github.com/A-Oez/go-mfr/pkg/excel_utils"
 
-	"github.com/A-Oez/MFRCli/internal/service/excel_handler"
+	"github.com/A-Oez/go-mfr/internal/service/excel_handler"
 
-	pReader "github.com/A-Oez/MFRCli/pkg"
+	pReader "github.com/A-Oez/go-mfr/pkg"
 
 	"github.com/spf13/cobra"
 )

@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"log"
 
-	excelModel "github.com/A-Oez/MFRCli/internal/model/excel_model"
-	jsonParser "github.com/A-Oez/MFRCli/internal/service/json_parser"
+	excelModel "github.com/A-Oez/go-mfr/internal/model/excel_model"
+	jsonParser "github.com/A-Oez/go-mfr/internal/service/json_parser"
 
-	pReader "github.com/A-Oez/MFRCli/pkg"
-	excelUtils "github.com/A-Oez/MFRCli/pkg/excel_utils"
+	pReader "github.com/A-Oez/go-mfr/pkg"
+	excelUtils "github.com/A-Oez/go-mfr/pkg/excel_utils"
 	"github.com/xuri/excelize/v2"
 )
 

@@ -1,4 +1,4 @@
-module github.com/A-Oez/MFRCli
+module github.com/A-Oez/go-mfr
 
 go 1.22.0
 

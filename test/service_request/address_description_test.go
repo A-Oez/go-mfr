@@ -3,9 +3,9 @@ package service_request_test
 import (
 	"testing"
 
-	_ "github.com/A-Oez/MFRCli/internal/interfaces"
-	excelHandler "github.com/A-Oez/MFRCli/internal/service/excel_handler"
-	json_parser "github.com/A-Oez/MFRCli/internal/service/json_parser"
+	_ "github.com/A-Oez/go-mfr/internal/interfaces"
+	excelHandler "github.com/A-Oez/go-mfr/internal/service/excel_handler"
+	json_parser "github.com/A-Oez/go-mfr/internal/service/json_parser"
 )
 
 type DescrMockHttpGetByTNumber struct{}

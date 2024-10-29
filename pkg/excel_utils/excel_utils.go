@@ -6,7 +6,7 @@ import (
 
 	"github.com/xuri/excelize/v2"
 
-	pReader "github.com/A-Oez/MFRCli/pkg"
+	pReader "github.com/A-Oez/go-mfr/pkg"
 )
 
 func GetTNumbers(filePath string) []string {
