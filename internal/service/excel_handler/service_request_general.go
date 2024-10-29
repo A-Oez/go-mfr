@@ -64,20 +64,7 @@ func assignSReqDataToExcel(serviceRequests jsonModel.ServiceRequestResponse, SRE
 		SREQGeneral.Stadt = spllittedAddress[4]
 	} else {
 		SREQGeneral.Stadt = serviceRequests.Value[0].Name
-	}
-
-	//customer
-	splittedDescrByCustomer := strings.Split(serviceRequests.Value[0].Description, "|")
-	for customerIndex := range splittedDescrByCustomer {
-		splittedCustomer := strings.Split(splittedDescrByCustomer[customerIndex], ";")
-		if len(splittedCustomer) != 4 {
-			SREQGeneral.Vertragsnehmer = serviceRequests.Value[0].Description
-			break
-		} else {
-			//assignVNValues(customerIndex, splittedCustomer[0], SREQGeneral)
-			SREQGeneral.Vertragsnehmer += fmt.Sprintf("%s | ", splittedCustomer[1])
-		}
-	}
+	}			
 
 	//direct assignments
 	SREQGeneral.Auftragsname = serviceRequests.Value[0].Name
@@ -131,20 +118,6 @@ func assignStepDataToExcel(stepDataField []jsonModel.StepDataField, SREQGeneral 
 
 	}
 }
-
-func assignVNValues(customerIndex int, vnValue string, SREQGeneral *excelModel.SREQGeneral){
-	switch customerIndex{
-		case 0:
-			SREQGeneral.Vertragsnummer1 = strings.Split(vnValue, ":")[1]
-		case 1:
-			SREQGeneral.Vertragsnummer2 = strings.Split(vnValue, ":")[1] 
-		case 2:
-			SREQGeneral.Vertragsnummer3 = strings.Split(vnValue, ":")[1] 
-		case 3:
-			SREQGeneral.Vertragsnummer4 = strings.Split(vnValue, ":")[1]
-	}
-}
-
 
 func (sreq *SREQGeneral) WriteExcel(filePath string, excelModel excelModel.SREQGeneral) {
 	file, err := excelize.OpenFile(filePath)
