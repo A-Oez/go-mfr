@@ -8,8 +8,8 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:  "MFRCli",
-	Long: "A GoLang CLI to communicate with the OData interface of mfr",
+	Use:  "go-mfr",
+	Long: "A GoLang CLI to communicate with the REST interface of mfr",
 }
 
 func Execute() {

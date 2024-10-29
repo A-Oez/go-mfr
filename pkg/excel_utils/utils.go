@@ -1,6 +1,7 @@
 package excel_utils
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -9,16 +10,16 @@ import (
 	pReader "github.com/A-Oez/go-mfr/pkg"
 )
 
-func GetTNumbers(filePath string) []string {
+func GetTNumbers(filePath string) ([]string, error) {
 	file, err := excelize.OpenFile(filePath)
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("failed to open file %s: \n error_msg: %w", filePath, err)
 	}
 
 	sheetName := pReader.GetProperty("tNumberSheet")
 	rows, err := file.GetRows(sheetName)
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("failed to get rows from sheet %s: \n error_msg: %w", sheetName, err)
 	}
 
 	var columnValues []string
@@ -27,7 +28,7 @@ func GetTNumbers(filePath string) []string {
 		columnValues = append(columnValues, row[0])
 	}
 
-	return columnValues
+	return columnValues, nil
 }
 
 func FindNextEmptyRow(file *excelize.File, sheetName string) int {

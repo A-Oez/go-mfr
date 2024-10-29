@@ -1,6 +1,6 @@
-package excel_model
+package excel
 
-type SREQGeneral struct {
+type SREQ struct {
 	TNummer               string
 	KW                    int
 	Datum                 string

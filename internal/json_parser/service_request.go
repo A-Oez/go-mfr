@@ -5,22 +5,22 @@ import (
 	"log"
 	"strings"
 
-	"github.com/A-Oez/go-mfr/internal/http"
-	"github.com/A-Oez/go-mfr/internal/interfaces"
-	jsonModel "github.com/A-Oez/go-mfr/internal/model/json_model"
+	jsonModel "github.com/A-Oez/go-mfr/internal/model/json"
 )
 
-var HttpGetService interfaces.HttpGetByTNumber
-
-func init() {
-	HttpGetService = &http.SREQHttpHandler{}
+type HTTPClient interface {
+	GetByTNumber(tNumber string) string
 }
 
-func ParseSREQResponse(tNumber string) (jsonModel.ServiceRequestResponse, []jsonModel.StepDataField) {
-	var serviceRequests jsonModel.ServiceRequestResponse
+type SREQParser struct{
+	Client HTTPClient
+}
+
+func (sreqp *SREQParser) ParseSREQResponse(tNumber string) (jsonModel.SREQ, []jsonModel.StepDataField) {
+	var serviceRequests jsonModel.SREQ
 	var stepDataField []jsonModel.StepDataField
 
-	jsonBody := HttpGetService.GetByTNumber(tNumber)
+	jsonBody := sreqp.Client.GetByTNumber(tNumber)
 
 	err := json.NewDecoder(strings.NewReader(jsonBody)).Decode(&serviceRequests)
 	if err != nil {
@@ -35,7 +35,7 @@ func ParseSREQResponse(tNumber string) (jsonModel.ServiceRequestResponse, []json
 	return serviceRequests, nil
 }
 
-func parseStepData(serviceRequests jsonModel.ServiceRequestResponse) []jsonModel.StepDataField {
+func parseStepData(serviceRequests jsonModel.SREQ) []jsonModel.StepDataField {
 	var stepDataFieldArr []jsonModel.StepDataField
 	stepArr := serviceRequests.Value[0].Steps
 
@@ -57,7 +57,7 @@ func parseStepData(serviceRequests jsonModel.ServiceRequestResponse) []jsonModel
 	return stepDataFieldArr
 }
 
-func relevantStepData(serviceRequests jsonModel.ServiceRequestResponse, index int) bool {
+func relevantStepData(serviceRequests jsonModel.SREQ, index int) bool {
 	return serviceRequests.Value[0].Steps[index].Name == "Sonstige Bemerkungen" ||
 		serviceRequests.Value[0].Steps[index].Name == "FTTX_Montage/Einblasen NVT" ||
 		serviceRequests.Value[0].Steps[index].Name == "FTTX_Montage AP"

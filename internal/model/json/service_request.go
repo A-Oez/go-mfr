@@ -1,6 +1,6 @@
-package json_model
+package json
 
-type ServiceRequestResponse struct {
+type SREQ struct {
 	OdataMetadata string  `json:"odata.metadata"`
 	Value         []Value `json:"value"`
 }

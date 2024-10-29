@@ -1,4 +1,4 @@
-package excel_handler
+package excel
 
 import (
 	"errors"
@@ -8,38 +8,43 @@ import (
 	"fmt"
 	"log"
 
-	excelModel "github.com/A-Oez/go-mfr/internal/model/excel_model"
-	jsonModel "github.com/A-Oez/go-mfr/internal/model/json_model"
-	jsonParser "github.com/A-Oez/go-mfr/internal/service/json_parser"
+	excelModel "github.com/A-Oez/go-mfr/internal/model/excel"
+	jsonModel "github.com/A-Oez/go-mfr/internal/model/json"
 
 	pReader "github.com/A-Oez/go-mfr/pkg"
 	excelUtils "github.com/A-Oez/go-mfr/pkg/excel_utils"
 	"github.com/xuri/excelize/v2"
 )
 
-type SREQGeneral struct{}
+type JsonParser interface {
+	ParseSREQResponse(tNumber string) (jsonModel.SREQ, []jsonModel.StepDataField)
+}
 
-func (sreq *SREQGeneral) GetExcelModel(tNumber string) (excelModel.SREQGeneral, error) {
-	var SREQGeneral excelModel.SREQGeneral
-	serviceRequests, stepDataField := jsonParser.ParseSREQResponse(tNumber)
+type ServiceRequest struct{
+	JsonParser JsonParser
+}
+
+func (sreq *ServiceRequest) GetExcelModel(tNumber string) (excelModel.SREQ, error) {
+	var model excelModel.SREQ
+	serviceRequests, stepDataField := sreq.JsonParser.ParseSREQResponse(tNumber)
 
 	if stepDataField == nil {
-		return SREQGeneral, errors.New("-- ERROR | Keine Checklisten hinterlegt")
+		return model, errors.New("-- ERROR | Keine Checklisten hinterlegt")
 	}
 
-	SREQGeneral.TNummer = tNumber
-	err := assignSReqDataToExcel(serviceRequests, &SREQGeneral)
+	model.TNummer = tNumber
+	err := assignSReqDataToExcel(serviceRequests, &model)
 	if err != nil {
-		return SREQGeneral, errors.New("-- ERROR | " + err.Error())
+		return model, errors.New("-- ERROR | " + err.Error())
 	}
 
 	//method overwrites excel columns from step data (checklists)  
-	assignStepDataToExcel(stepDataField, &SREQGeneral)
+	assignStepDataToExcel(stepDataField, &model)
 
-	return SREQGeneral, nil
+	return model, nil
 }
 
-func assignSReqDataToExcel(serviceRequests jsonModel.ServiceRequestResponse, SREQGeneral *excelModel.SREQGeneral) error {
+func assignSReqDataToExcel(serviceRequests jsonModel.SREQ, SREQGeneral *excelModel.SREQ) error {
 	//date + kw
 	if len(serviceRequests.Value[0].Appointments) > 0 {
 		timeObj, _ := time.Parse(time.RFC3339, serviceRequests.Value[0].Appointments[0].EndDateTime)
@@ -86,7 +91,7 @@ func assignSReqDataToExcel(serviceRequests jsonModel.ServiceRequestResponse, SRE
 	return nil
 }
 
-func assignStepDataToExcel(stepDataField []jsonModel.StepDataField, SREQGeneral *excelModel.SREQGeneral){
+func assignStepDataToExcel(stepDataField []jsonModel.StepDataField, SREQGeneral *excelModel.SREQ){
 	for _, stepData := range stepDataField {
 		switch stepData.Name {
 		case "Verband & Röhrchen Farbe NVT? (Foto)":
@@ -132,7 +137,7 @@ func assignStepDataToExcel(stepDataField []jsonModel.StepDataField, SREQGeneral 
 	}
 }
 
-func assignVNValues(customerIndex int, vnValue string, SREQGeneral *excelModel.SREQGeneral){
+func assignVNValues(customerIndex int, vnValue string, SREQGeneral *excelModel.SREQ){
 	switch customerIndex{
 		case 0:
 			SREQGeneral.Vertragsnummer1 = strings.Split(vnValue, ":")[1]
@@ -146,7 +151,7 @@ func assignVNValues(customerIndex int, vnValue string, SREQGeneral *excelModel.S
 }
 
 
-func (sreq *SREQGeneral) WriteExcel(filePath string, excelModel excelModel.SREQGeneral) {
+func (sreq *ServiceRequest) WriteExcel(filePath string, excelModel excelModel.SREQ) {
 	file, err := excelize.OpenFile(filePath)
 	if err != nil {
 		log.Fatal(err)
@@ -197,6 +202,6 @@ func (sreq *SREQGeneral) WriteExcel(filePath string, excelModel excelModel.SREQG
 		log.Fatal(err)
 	}
 
-	fmt.Println(fmt.Sprintf("* %s %s", pReader.GetProperty("serviceRequestExport"), excelModel.TNummer))
-
+	serviceRequestExport := pReader.GetProperty("serviceRequestExport")
+	fmt.Printf("* %s %s\n", serviceRequestExport, excelModel.TNummer)
 }
