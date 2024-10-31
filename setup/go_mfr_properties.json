@@ -1,0 +1,7 @@
+{
+    "auth": "Basic ",
+    "tnumber_sheet": "TNUMBER",
+    "service_request_export": "EXPORT",
+    "excel_path": "",
+    "tui_header": ""
+}

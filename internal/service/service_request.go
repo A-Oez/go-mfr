@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/A-Oez/go-mfr/internal/excel"
 	jsonParser "github.com/A-Oez/go-mfr/internal/json_parser"
@@ -11,10 +10,10 @@ import (
 )
 
 
-func HandleServiceRequestExport(excelPath string, client jsonParser.HTTPClient) {
+func HandleServiceRequestExport(excelPath string, client jsonParser.HTTPClient) error {
 	tNumbers, err := excelUtils.GetTNumbers(excelPath)
 	if err != nil{
-		log.Fatal(err)
+		return err
 	}
 
 	parser := &jsonParser.SREQParser{
@@ -28,10 +27,11 @@ func HandleServiceRequestExport(excelPath string, client jsonParser.HTTPClient) 
 	for i := range tNumbers {
 		SREQGeneral, err := excelHandler.GetExcelModel(tNumbers[i])
 		if err != nil {
-			fmt.Printf("* %s %s: %s\n", pReader.GetProperty("serviceRequestExport"), tNumbers[i], err.Error())
+			return fmt.Errorf("* %s %s: %s\n", pReader.GetProperty("service_request_export"), tNumbers[i], err.Error())
 		} 
 
 		excelHandler.WriteExcel(excelPath, SREQGeneral)
 	}
 
+	return nil
 }

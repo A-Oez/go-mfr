@@ -13,19 +13,23 @@ import (
 func GetTNumbers(filePath string) ([]string, error) {
 	file, err := excelize.OpenFile(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open file %s: \n error_msg: %w", filePath, err)
+		return nil, fmt.Errorf("excel-datei konnte nicht geöffnet werden %s:\n error_msg: %w", filePath, err)
 	}
 
-	sheetName := pReader.GetProperty("tNumberSheet")
+	sheetName := pReader.GetProperty("tnumber_sheet")
 	rows, err := file.GetRows(sheetName)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get rows from sheet %s: \n error_msg: %w", sheetName, err)
+		return nil, fmt.Errorf("t-nummern konnten nicht extrahiert werden %s:\n error_msg: %w", sheetName, err)
 	}
 
 	var columnValues []string
 
 	for _, row := range rows {
 		columnValues = append(columnValues, row[0])
+	}
+
+	if(len(columnValues) == 0){
+		return nil, fmt.Errorf("keine t-nummern in der excel arbeitsmappe: %s hinterlegt", sheetName)
 	}
 
 	return columnValues, nil

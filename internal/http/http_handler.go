@@ -2,11 +2,12 @@ package http
 
 import (
 	"fmt"
-	"log"
 	"net/url"
+	"os"
 	"strconv"
 
 	httpUtils "github.com/A-Oez/go-mfr/pkg/http_utils"
+	"github.com/pterm/pterm"
 )
 
 type HttpHandler struct{}
@@ -18,7 +19,9 @@ func (h *HttpHandler) GetByTNumber(tNumber string) string {
 	statusCode, jsonBody := httpUtils.HttpGetRequest(apiUrl)
 
 	if statusCode != 200 {
-		log.Fatal("http statuscode: " + strconv.Itoa(statusCode) + "| t-number: " + tNumber)
+		err := fmt.Errorf("http: " + strconv.Itoa(statusCode) + " | t-number: " + tNumber)
+		pterm.Error.Println(err)
+		os.Exit(1)
 	}
 
 	return jsonBody

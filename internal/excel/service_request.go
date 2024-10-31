@@ -10,6 +10,7 @@ import (
 
 	excelModel "github.com/A-Oez/go-mfr/internal/model/excel"
 	jsonModel "github.com/A-Oez/go-mfr/internal/model/json"
+	"github.com/pterm/pterm"
 
 	pReader "github.com/A-Oez/go-mfr/pkg"
 	excelUtils "github.com/A-Oez/go-mfr/pkg/excel_utils"
@@ -29,13 +30,13 @@ func (sreq *ServiceRequest) GetExcelModel(tNumber string) (excelModel.SREQ, erro
 	serviceRequests, stepDataField := sreq.JsonParser.ParseSREQResponse(tNumber)
 
 	if stepDataField == nil {
-		return model, errors.New("-- ERROR | Keine Checklisten hinterlegt")
+		return model, errors.New("keine checklisten hinterlegt")
 	}
 
 	model.TNummer = tNumber
 	err := assignSReqDataToExcel(serviceRequests, &model)
 	if err != nil {
-		return model, errors.New("-- ERROR | " + err.Error())
+		return model, err
 	}
 
 	//method overwrites excel columns from step data (checklists)  
@@ -48,41 +49,28 @@ func assignSReqDataToExcel(serviceRequests jsonModel.SREQ, SREQGeneral *excelMod
 	//date + kw
 	if len(serviceRequests.Value[0].Appointments) > 0 {
 		timeObj, _ := time.Parse(time.RFC3339, serviceRequests.Value[0].Appointments[0].EndDateTime)
-		formattedDate := timeObj.Format("02.01.2006")
+		formattedDate := timeObj.Format("01.01.2000")
 		_, week := timeObj.ISOWeek()
 		SREQGeneral.Datum = formattedDate
 		SREQGeneral.KW = week
 	} else {
-		return errors.New("Kein Termin hinterlegt")
+		return errors.New("kein datum hinterlegt")
 	}
 
 	//address
-	spllittedAddress := strings.Split(serviceRequests.Value[0].Name, "_")
-	if len(spllittedAddress) == 6 {
-		SREQGeneral.Straße = spllittedAddress[2]
-		SREQGeneral.Hausnummer = spllittedAddress[3]
-		SREQGeneral.Stadt = spllittedAddress[4]
-		SREQGeneral.Ort = spllittedAddress[5]
-	} else if len(spllittedAddress) > 4 && len(spllittedAddress) < 6 {
-		SREQGeneral.Straße = spllittedAddress[2]
-		SREQGeneral.Hausnummer = spllittedAddress[3]
-		SREQGeneral.Stadt = spllittedAddress[4]
+	splittedAddress := strings.Split(serviceRequests.Value[0].Name, "_")
+	if len(splittedAddress) >= 6 {
+		SREQGeneral.Straße = assignIfExists(splittedAddress, 2)
+		SREQGeneral.Hausnummer = assignIfExists(splittedAddress, 3)
+		SREQGeneral.Stadt = assignIfExists(splittedAddress, 4)
+		SREQGeneral.Ort = assignIfExists(splittedAddress, 5)
+	} else if len(splittedAddress) >= 5 {
+		SREQGeneral.Straße = assignIfExists(splittedAddress, 2)
+		SREQGeneral.Hausnummer = assignIfExists(splittedAddress, 3)
+		SREQGeneral.Stadt = assignIfExists(splittedAddress, 4)
 	} else {
 		SREQGeneral.Stadt = serviceRequests.Value[0].Name
-	}
-
-	//customer
-	splittedDescrByCustomer := strings.Split(serviceRequests.Value[0].Description, "|")
-	for customerIndex := range splittedDescrByCustomer {
-		splittedCustomer := strings.Split(splittedDescrByCustomer[customerIndex], ";")
-		if len(splittedCustomer) != 4 {
-			SREQGeneral.Vertragsnehmer = serviceRequests.Value[0].Description
-			break
-		} else {
-			assignVNValues(customerIndex, splittedCustomer[0], SREQGeneral)
-			SREQGeneral.Vertragsnehmer += fmt.Sprintf("%s | ", splittedCustomer[1])
-		}
-	}
+	}			
 
 	//direct assignments
 	SREQGeneral.Auftragsname = serviceRequests.Value[0].Name
@@ -137,27 +125,13 @@ func assignStepDataToExcel(stepDataField []jsonModel.StepDataField, SREQGeneral 
 	}
 }
 
-func assignVNValues(customerIndex int, vnValue string, SREQGeneral *excelModel.SREQ){
-	switch customerIndex{
-		case 0:
-			SREQGeneral.Vertragsnummer1 = strings.Split(vnValue, ":")[1]
-		case 1:
-			SREQGeneral.Vertragsnummer2 = strings.Split(vnValue, ":")[1] 
-		case 2:
-			SREQGeneral.Vertragsnummer3 = strings.Split(vnValue, ":")[1] 
-		case 3:
-			SREQGeneral.Vertragsnummer4 = strings.Split(vnValue, ":")[1]
-	}
-}
-
-
 func (sreq *ServiceRequest) WriteExcel(filePath string, excelModel excelModel.SREQ) {
 	file, err := excelize.OpenFile(filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	sheetName := pReader.GetProperty("serviceRequestExport")
+	sheetName := pReader.GetProperty("service_request_export")
 
 	row := excelUtils.FindNextEmptyRow(file, sheetName)
 
@@ -202,6 +176,13 @@ func (sreq *ServiceRequest) WriteExcel(filePath string, excelModel excelModel.SR
 		log.Fatal(err)
 	}
 
-	serviceRequestExport := pReader.GetProperty("serviceRequestExport")
-	fmt.Printf("* %s %s\n", serviceRequestExport, excelModel.TNummer)
+	serviceRequestExport := pReader.GetProperty("service_request_export")
+	pterm.Info.Printf("* %s %s\n", serviceRequestExport, excelModel.TNummer)
+}
+
+func assignIfExists(slice []string, index int) string {
+	if index < len(slice) {
+		return slice[index]
+	}
+	return ""
 }

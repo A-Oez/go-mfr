@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/A-Oez/go-mfr/internal/service"
+	"github.com/A-Oez/go-mfr/pkg"
 )
 
 type MockHttpGetByTNumber struct{}
@@ -17,12 +18,15 @@ func (h *MockHttpGetByTNumber) GetByTNumber(tNumber string) string {
 }
 
 func TestExcelWriter(t *testing.T) {
-	excelPath := filepath.Join("..", "..", "test_files", "template_mfr_export.xlsx")
-	service.HandleServiceRequestExport(excelPath, &MockHttpGetByTNumber{})
+	excelPath := pkg.GetProperty("excel_path")
+	err := service.HandleServiceRequestExport(excelPath, &MockHttpGetByTNumber{})
+	if err != nil{
+		log.Fatal(err)
+	} 
 }
 
 func getJsonFileByID(jsonID string) string{
-	jsonFile := fmt.Sprintf("../test_files/json_%s.json", jsonID)
+	jsonFile := fmt.Sprintf("/test_files/json_%s.json", jsonID)
 	filePath := filepath.Join("..", "..", "test_files", jsonFile)
 
 	content, err := os.ReadFile(filePath)

@@ -4,15 +4,12 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"path/filepath"
 )
 
 func GetProperty(key string) string {
-	absoluteFilePath := filepath.Join("config", "properties.json")
-
-	data, err := os.ReadFile(absoluteFilePath)
+	data, err := os.ReadFile(os.Getenv("GO_MFR_PATH"))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("properties datei konnte nicht geöffnet werden, GO_MFR_PATH systemvariable prüfen\n error_msg: %v", err)
 	}
 
 	var jsonData map[string]interface{}

@@ -46,7 +46,6 @@ func parseStepData(serviceRequests jsonModel.SREQ) []jsonModel.StepDataField {
 			var stepData jsonModel.StepData
 			err := json.Unmarshal(jsonBytes, &stepData)
 			if err != nil {
-
 				log.Fatal(err)
 			}
 
